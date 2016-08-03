@@ -27,7 +27,6 @@ function data = loadSeq(path)
 %                         matrices (camera pose, in homogeneous coordinates)
 %
 % Author: Andy Zeng, andyz@princeton.edu
-path = '../../sample_data/test/seq-000000';
 
 % Read camera info
 camInfoFile = fullfile(path,'cam.info.txt');
