@@ -1,6 +1,6 @@
 function writeDepth(depth,path)
 % WRITEDEPTH: Saves a depth image (16-bit PNG, circularly bitshifted to 
-% the right by 3 bits, depth in decimillimeters)
+% the right by 3 bits, depth in decimillimeters).
 %
 % Arguments: (input)
 %   depth - 480x640 float array of depth values in meters

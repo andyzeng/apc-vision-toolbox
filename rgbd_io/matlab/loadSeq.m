@@ -1,5 +1,5 @@
 function data = loadSeq(path)
-% LOADSEQ: Load camera information and a sequence of RGB-D frames
+% LOADSEQ: Load camera information and a sequence of RGB-D frames.
 %
 % Arguments: (input)
 %   path                - file path to the directory holding the RGB-D

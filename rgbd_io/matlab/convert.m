@@ -7,8 +7,8 @@ addpath(genpath(fullfile(toolboxRoot,'rgbd_io','matlab')));
 
 
 
-inputFolder = '../../sample_data/test/000000';
-outputFolder = '../../sample_data/test/seq-000000';
+inputFolder = '../../sample_data/calibration/shelf/000011';
+outputFolder = '../../sample_data/calibration/shelf/seq-L';
 
 % Make output folder
 mkdir(outputFolder);
@@ -27,25 +27,29 @@ depth2colorExt = [dlmread(fullfile(inputFolder,'depth2color_extrinsics.K.txt'));
 % Load camera poses
 extBin2WorldFile = dir(fullfile(inputFolder,'pose_bin*_map.txt'));
 binNames = ['A','B','C','D','E','F','G','H','I','J','K','L'];
-binId = binNames(str2num(extBin2WorldFile.name(9:(end-8)))+1);
+binNum = str2num(extBin2WorldFile.name(9:(end-8)));
+if (binNum >= 0)
+    binId = binNames(binNum+1);
+end
 extBin2World = dlmread(fullfile(inputFolder,extBin2WorldFile.name));
 extWorld2Bin = inv(extBin2World);
 
 fid = fopen(fullfile(outputFolder,'cam.info.txt'),'wb');
 fprintf(fid,'# Environment: ');
-if binId == -1
+if binNum == -1
     fprintf(fid,'tote\n');
+    fprintf(fid,'# Bin ID: N/A\n');
 else
     fprintf(fid,'shelf\n');
     fprintf(fid,'# Bin ID: %s\n',binId);
 end
-fprintf(fid,'\n# Color camera intrinsic matrix\n')
+fprintf(fid,'\n# Color camera intrinsic matrix\n');
 fprintf(fid,'%15.8e\t %15.8e\t %15.8e\t\n',colorK');
-fprintf(fid,'\n# Depth camera intrinsic matrix\n')
+fprintf(fid,'\n# Depth camera intrinsic matrix\n');
 fprintf(fid,'%15.8e\t %15.8e\t %15.8e\t\n',depthK');
-fprintf(fid,'\n# Depth-to-color camera extrinsic matrix\n')
+fprintf(fid,'\n# Depth-to-color camera extrinsic matrix\n');
 fprintf(fid,'%15.8e\t %15.8e\t %15.8e\t %15.8e\t\n',depth2colorExt');
-fprintf(fid,'\n# World-to-bin transformation matrix\n')
+fprintf(fid,'\n# World-to-bin transformation matrix\n');
 fprintf(fid,'%15.8e\t %15.8e\t %15.8e\t %15.8e\t\n',extBin2World');
 
 mkdir(fullfile(outputFolder,'raw'));

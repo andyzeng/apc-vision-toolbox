@@ -1,6 +1,6 @@
 function depth = readDepth(path)
 % READDEPTH: Reads a depth image (16-bit PNG, circularly bitshifted to the
-% right by 3 bits, depth in decimillimeters)
+% right by 3 bits, depth in decimillimeters).
 %
 % Arguments: (input)
 %   path  - file path to the 480x640 depth image
