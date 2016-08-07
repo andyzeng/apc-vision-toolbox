@@ -5,8 +5,6 @@ function writeDepth(depth,path)
 % Arguments: (input)
 %   depth - 480x640 float array of depth values in meters
 %   path  - file path and name to the 480x640 depth image
-%
-% Author:  Andy Zeng, andyz@princeton.edu
 
 data = uint16(round(depth.*10000));
 data = bitor(bitshift(data,3),bitshift(data,-13));

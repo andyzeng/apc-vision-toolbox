@@ -1,12 +1,12 @@
 % Calibrate camera-to-world camera poses for the tote views
 fprintf('Calibrating tote views...');
-calibDirTote = '../sample_data/calibration/tote';
+calibDirTote = '../data/benchmark/office/calibration/tote';
 calibSeq(fullfile(calibDirTote,'seq-tote'),fullfile(calibDirTote,'cam.poses.txt'));
 fprintf(' done!\n');
 
 % Calibrate camera-to-world camera poses for the shelf views
 fprintf('Calibrating shelf views...');
-calibDirShelf = '../sample_data/calibration/shelf';
+calibDirShelf = '../data/benchmark/office/calibration/shelf';
 fprintf(' A'); calibSeq(fullfile(calibDirShelf,'seq-A'),fullfile(calibDirShelf,'cam.poses.A.txt'));
 fprintf(' B'); calibSeq(fullfile(calibDirShelf,'seq-B'),fullfile(calibDirShelf,'cam.poses.B.txt'));
 fprintf(' C'); calibSeq(fullfile(calibDirShelf,'seq-C'),fullfile(calibDirShelf,'cam.poses.C.txt'));

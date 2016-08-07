@@ -28,18 +28,24 @@ function data = loadSeq(path)
 %
 % Author: Andy Zeng, andyz@princeton.edu
 
-% Read camera info
+% Read camera info and object list
 camInfoFile = fullfile(path,'cam.info.txt');
 camInfoFileId = fopen(camInfoFile,'rb');
 data.env = fscanf(camInfoFileId,'# Environment: %s');
 if strcmp(data.env,'shelf')
     data.binId = fscanf(camInfoFileId,'\n# Bin ID: %s');
 end
+objListLine = fgetl(camInfoFileId);
+objListDelim = strsplit(objListLine,'"');
+data.objects = {};
+for objIdx = 2:2:length(objListDelim)
+    data.objects{length(data.objects)+1} = objListDelim{objIdx};
+end
 fclose(camInfoFileId);
-data.colorK = dlmread(camInfoFile,'\t',[4,0,6,2]);
-data.depthK = dlmread(camInfoFile,'\t',[9,0,11,2]);
-data.extDepth2Color = dlmread(camInfoFile,'\t',[14,0,17,3]);
-data.extWorld2Bin = dlmread(camInfoFile,'\t',[20,0,23,3]);
+data.colorK = dlmread(camInfoFile,'\t',[5,0,7,2]);
+data.depthK = dlmread(camInfoFile,'\t',[10,0,12,2]);
+data.extDepth2Color = dlmread(camInfoFile,'\t',[15,0,18,3]);
+data.extWorld2Bin = dlmread(camInfoFile,'\t',[21,0,24,3]);
 
 % Read RGB-D frames and respective camera poses
 colorFrameDir = dir(fullfile(path,'frame-*.color.png'));
@@ -51,5 +57,5 @@ data.extCam2World = cell(1,numFrames);
 for frameIdx = 1:numFrames
     data.colorFrames{frameIdx} = imread(fullfile(path,colorFrameDir(frameIdx).name));
     data.depthFrames{frameIdx} = readDepth(fullfile(path,depthFrameDir(frameIdx).name));
-    data.extCam2World{frameIdx} = dlmread(camInfoFile,'\t',[20+6*frameIdx,0,23+6*frameIdx,3]);
+    data.extCam2World{frameIdx} = dlmread(camInfoFile,'\t',[21+6*frameIdx,0,24+6*frameIdx,3]);
 end

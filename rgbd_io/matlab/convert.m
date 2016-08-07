@@ -1,23 +1,18 @@
-clear all; close all;
-
-toolboxRoot = '../..';
-addpath(genpath(fullfile(toolboxRoot,'rgbd_io','matlab')));
-
-% converOld2NewFormat('../../sample_data/test/000000','../../sample_data/test/seq-000000')
-
-
-
-inputFolder = '../../sample_data/calibration/shelf/000011';
-outputFolder = '../../sample_data/calibration/shelf/seq-L';
-
-% Make output folder
-mkdir(outputFolder);
+function convert(inputFolder,outputFolder,visFile)
 
 % Search through files in data directory
 colorFiles = dir(fullfile(inputFolder,'*.color.png'));
 depthFiles = dir(fullfile(inputFolder,'*.regdepth.png'));
 rawDepthFiles = dir(fullfile(inputFolder,'*.rawdepth.png'));
 extFiles = dir(fullfile(inputFolder,'*.pose_camera_map.txt'));
+
+% Load object list
+if ~exist(fullfile(inputFolder,'object_list.json'),'file')
+    objList = {};
+else
+    objList = loadjson(fullfile(inputFolder,'object_list.json'));
+    objList = sort(objList);
+end
 
 % Load camera intrinsics
 colorK = dlmread(fullfile(inputFolder,'color_intrinsics.K.txt'));
@@ -26,13 +21,24 @@ depth2colorExt = [dlmread(fullfile(inputFolder,'depth2color_extrinsics.K.txt'));
 
 % Load camera poses
 extBin2WorldFile = dir(fullfile(inputFolder,'pose_bin*_map.txt'));
+if length(extBin2WorldFile) > 1
+    fprintf('skipping (bad bin num) %s\n',inputFolder);
+    return;
+end
 binNames = ['A','B','C','D','E','F','G','H','I','J','K','L'];
 binNum = str2num(extBin2WorldFile.name(9:(end-8)));
+if (binNum == -1 && length(colorFiles) ~= 18) || (binNum > -1 && length(colorFiles) ~= 15)
+    fprintf('skipping (bad num frames) %s\n',inputFolder);
+    return;
+end
 if (binNum >= 0)
     binId = binNames(binNum+1);
 end
 extBin2World = dlmread(fullfile(inputFolder,extBin2WorldFile.name));
 extWorld2Bin = inv(extBin2World);
+
+% Make output folder
+mkdir(outputFolder);
 
 fid = fopen(fullfile(outputFolder,'cam.info.txt'),'wb');
 fprintf(fid,'# Environment: ');
@@ -43,6 +49,14 @@ else
     fprintf(fid,'shelf\n');
     fprintf(fid,'# Bin ID: %s\n',binId);
 end
+fprintf(fid,'# Objects: [');
+for objIdx = 1:length(objList)
+    fprintf(fid,'"%s"',objList{objIdx});
+    if objIdx < length(objList)
+        fprintf(fid,',');
+    end
+end
+fprintf(fid,']\n');
 fprintf(fid,'\n# Color camera intrinsic matrix\n');
 fprintf(fid,'%15.8e\t %15.8e\t %15.8e\t\n',colorK');
 fprintf(fid,'\n# Depth camera intrinsic matrix\n');
@@ -67,8 +81,18 @@ for frameIdx = 1:length(colorFiles)
     fprintf(fid,'\n# Camera-to-world extrinsic matrix (camera pose) for frame-%06d\n',frameIdx-1);
     fprintf(fid,'%15.8e\t %15.8e\t %15.8e\t %15.8e\t\n',dlmread(fullfile(inputFolder,extFiles(frameIdx).name))');
 end
-
 fclose(fid);
+
+% Visualize core images
+if binNum == -1
+    colorImage1 = imread(fullfile(inputFolder,colorFiles(5).name));
+    colorImage2 = imread(fullfile(inputFolder,colorFiles(14).name));
+    imwrite([colorImage1;colorImage2],fullfile(visFile));
+else
+    colorImage = imread(fullfile(inputFolder,colorFiles(13).name));
+    imwrite(colorImage,fullfile(visFile));
+end
+
 
 
 
