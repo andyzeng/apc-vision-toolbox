@@ -1,9 +1,9 @@
 clear all; close all;
 
 % Parameters
-dataPath = '/home/andyzeng/apc/toolbox/data/benchmark/warehouse/practice/tote';
+dataPath = '/home/andyzeng/apc/toolbox/data/benchmark/warehouse/practice/shelf';
 calibDir = '/home/andyzeng/apc/toolbox/data/benchmark/warehouse/calibration';
-dataPrefix = 'wpt';
+dataPrefix = 'wps';
 
 % Load webpage templates
 pagePath = '~/apc/rgbd-annotator';
@@ -34,11 +34,7 @@ for seqIdx = 1:length(dataDir)
     seqData = loadSeq(seqPath);
     
     % Apply calibrated camera poses
-    if strcmp(seqData.env,'tote')
-        calibPath = fullfile(calibDir,'tote');
-        calibPoseFilename = 'cam.poses.txt';
-        seqData.extCam2World = loadCalib(fullfile(calibPath,calibPoseFilename));
-    end
+%     seqData = loadCalib(calibDir,seqData);
     
     % Create representative image and point cloud
     [seqIm,seqPC] = genPC(seqData);
