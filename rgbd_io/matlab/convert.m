@@ -63,7 +63,7 @@ fprintf(fid,'\n# Depth camera intrinsic matrix\n');
 fprintf(fid,'%15.8e\t %15.8e\t %15.8e\t\n',depthK');
 fprintf(fid,'\n# Depth-to-color camera extrinsic matrix\n');
 fprintf(fid,'%15.8e\t %15.8e\t %15.8e\t %15.8e\t\n',depth2colorExt');
-fprintf(fid,'\n# World-to-bin transformation matrix\n');
+fprintf(fid,'\n# Bin-to-world transformation matrix\n');
 fprintf(fid,'%15.8e\t %15.8e\t %15.8e\t %15.8e\t\n',extBin2World');
 
 mkdir(fullfile(outputFolder,'raw'));

@@ -11,7 +11,8 @@
 % Author: Andy Zeng, andyz@princeton.edu
 
 % Parameters
-seqDir = '../sample_data/test/seq-000000';
+seqDir = '../data/benchmark/warehouse/competition/pick/seq-0006';
+calibDir = '../data/benchmark/warehouse/calibration';
 gridFilterKernelSize = 0.001;
 
 % Add toolbox paths
@@ -21,18 +22,18 @@ addpath(genpath('../rgbd_io/matlab'));
 seqData = loadSeq(seqDir);
 
 % Apply calibrated camera poses (if not found, perform calibration)
-if strcmp(seqData.env,'shelf')
-    calibDir = '../sample_data/calibration/shelf';
-    calibPoseFilename = sprintf('cam.poses.%s.txt',seqData.binId);
-else
-    calibDir = '../sample_data/calibration/tote';
-    calibPoseFilename = 'cam.poses.txt';
-end
-if ~exist(fullfile(calibDir,calibPoseFilename),'file')
+% if strcmp(seqData.env,'shelf')
+%     calibDir = '../sample_data/calibration/shelf';
+%     calibPoseFilename = sprintf('cam.poses.%s.txt',seqData.binId);
+% else
+%     calibDir = '../sample_data/calibration/tote';
+%     calibPoseFilename = 'cam.poses.txt';
+% end
+if ~exist(fullfile(calibDir,'tote','cam.poses.txt'),'file') || ~exist(fullfile(calibDir,'shelf','cam.poses.A.txt'),'file')
     fprintf('Calibrated camera poses not found!\n');
     calibrate;
 end
-seqData.extCam2World = loadCalib(fullfile(calibDir,calibPoseFilename));
+seqData = loadCalib(calibDir,seqData); % Comment out this line to avoid using calibration camera poses
 
 % Create aggregated RGB-D point cloud
 fprintf('Creating 3D point cloud for "%s" ...',seqDir);

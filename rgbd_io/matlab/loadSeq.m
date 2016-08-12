@@ -34,6 +34,9 @@ camInfoFileId = fopen(camInfoFile,'rb');
 data.env = fscanf(camInfoFileId,'# Environment: %s');
 if strcmp(data.env,'shelf')
     data.binId = fscanf(camInfoFileId,'\n# Bin ID: %s');
+else
+    fgetl(camInfoFileId);
+    fgetl(camInfoFileId);
 end
 objListLine = fgetl(camInfoFileId);
 objListDelim = strsplit(objListLine,'"');
@@ -45,7 +48,7 @@ fclose(camInfoFileId);
 data.colorK = dlmread(camInfoFile,'\t',[5,0,7,2]);
 data.depthK = dlmread(camInfoFile,'\t',[10,0,12,2]);
 data.extDepth2Color = dlmread(camInfoFile,'\t',[15,0,18,3]);
-data.extWorld2Bin = dlmread(camInfoFile,'\t',[21,0,24,3]);
+data.extBin2World = dlmread(camInfoFile,'\t',[21,0,24,3]);
 
 % Read RGB-D frames and respective camera poses
 colorFrameDir = dir(fullfile(path,'frame-*.color.png'));

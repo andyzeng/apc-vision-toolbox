@@ -1,10 +1,10 @@
-function calibSeq(calibSeqDir,calibPoseFile)
-% CALIBSEQ Generate a better set of camera-to-world camera poses for a
-% sequence of RGB-D frames. This calibration step assumes that consistent
-% relative camera-to-camera poses can be achieved with the robot. 
+function getCalib(calibSeqDir,calibPoseFile)
+% GETCALIB Generate a better set of camera poses for a sequence of RGB-D 
+% frames. This calibration step assumes that consistent relative 
+% camera-to-camera poses can be achieved with the robot. 
 %
 % Summary: Pick one frame and set its original camera-to-world camera pose 
-% as the pivot pose. Use structure from motion to generate relative 
+% as the pivot pose. Use Structure from Motion to generate relative 
 % camera-to-camera poses, then use the pivot pose to generate the new
 % camera-to-world camera poses for all views. Note that the error from the
 % pivot pose propagates to the estimated camera poses of the other views.
@@ -73,7 +73,8 @@ for frameIdx = 1:numFrames
     
     % Set pivot camera pose
     if nearestFrameIdx(2,frameIdx) == 0
-        newExtCam2World{nearestFrameIdx(1,frameIdx)} = seqData.extCam2World{nearestFrameIdx(1,frameIdx)};
+        newExtCam2World{nearestFrameIdx(1,frameIdx)} = eye(4);
+%         newExtCam2World{nearestFrameIdx(1,frameIdx)} = seqData.extCam2World{nearestFrameIdx(1,frameIdx)};
         continue;
     end
     
@@ -98,7 +99,7 @@ end
 % Save new camera-to-world extrinsics to file
 calibPoseFileId = fopen(calibPoseFile,'wb');
 for frameIdx = 1:numFrames
-    fprintf(calibPoseFileId,'# Camera-to-world extrinsic matrix (camera pose) for frame-%06d\n',frameIdx-1);
+    fprintf(calibPoseFileId,'# Camera-to-camera extrinsic matrix (camera pose) from frame-%06d to frame-%06d\n',frameIdx-1,nearestFrameIdx(1)-1);
     fprintf(calibPoseFileId,'%15.8e\t %15.8e\t %15.8e\t %15.8e\t\n',newExtCam2World{frameIdx}');
     fprintf(calibPoseFileId,'\n');
 end
