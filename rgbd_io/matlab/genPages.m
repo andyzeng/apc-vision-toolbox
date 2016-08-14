@@ -34,7 +34,7 @@ for seqIdx = 1:length(dataDir)
     seqData = loadSeq(seqPath);
     
     % Apply calibrated camera poses
-%     seqData = loadCalib(calibDir,seqData);
+    seqData = loadCalib(calibDir,seqData);
     
     % Create representative image and point cloud
     [seqIm,seqPC] = genPC(seqData);
