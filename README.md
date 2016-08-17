@@ -39,10 +39,12 @@ sudo ./scripts/resetUSBports.sh
 
 ## Realsense ROS Package
 
-Warning: unfinished!
-TODO: Finish clean up, write documentation, and add branch with PCL/non-PCL support ...
+A C++ ROS package for streaming and capturing data (RGB-D frames and 3D point clouds) in real-time using [librealsense](https://github.com/IntelRealSense/librealsense). Tested on Ubuntu 14.04 and 16.04 with an Intel® RealSense™ F200 Camera. 
 
-A C++ ROS package for streaming and capturing data (RGB-D frames and 3D point clouds) in real-time using [librealsense](https://github.com/IntelRealSense/librealsense). Tested on Ubuntu 14.04 and 16.04 with an Intel® RealSense™ F200 Camera.
+This ROS packages comes in two different versions. Which version is installed will depend on your system's available software:
+
+* Version #1: only returns RGB-D frame data on service calls (does not require OpenCV or PCL)
+* Version #2: returns RGB-D frame data on service calls and publishes 3D point clouds (requires OpenCV and PCL)
 
 See `ros_packages/realsense_camera`
 
@@ -51,21 +53,21 @@ See `ros_packages/realsense_camera`
 1. [librealsense](https://github.com/IntelRealSense/librealsense) (installation instructions can be found [here](https://github.com/IntelRealSense/librealsense/blob/master/doc/installation.md))
  * Install with the Video4Linux backend
 
-2. OpenCV (tested with OpenCV 3.1)
+2. [Optional] OpenCV (tested with OpenCV 2.4.11)
  * Used for saving images
 
-3. [Optional] Point Cloud Library (tested with PCL 1.7.2)
+3. [Optional] Point Cloud Library (tested with PCL 1.7.1)
  * Used for saving point clouds
 
 ### Compilation
 * Copy the ROS package `ros_packages/realsense_camera` into your catkin workspace source directory (e.g. `catkin_ws/src`)
-* Configure `realsense_camera/CMakeLists.txt` according to the versions of your respective dependencies.
+* If necessary, configure `realsense_camera/CMakeLists.txt` according to your respective dependencies
 * In your catkin workspace, compile the package with `catkin_make` 
 * Source `devel/setup.sh`
 
 ### Usage
 * Start `roscore`
 * Run `rosrun realsense_camera capture` to stream data from the sensor and start the data capture service:
-  * `/realsense_camera` returns data from the sensor (response data format described in `realsense_camera/srv/StreamSensor.srv`)
-  * if you need the GL window to see the data do `rosrun realsense_camera capture _useGL:=True`
+  * The service `/realsense_camera` returns data from the sensor (response data format described in `realsense_camera/srv/StreamSensor.srv`)
+  * If you need a GL window to see the streamed RGB-D data, run `rosrun realsense_camera capture _display:=True`
  

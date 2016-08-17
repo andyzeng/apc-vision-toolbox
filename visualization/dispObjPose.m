@@ -1,4 +1,4 @@
-function canvas = dispObjPose(canvas,colorFrame,depthFrame,extCam2World,K,objCloud,objPoseWorld,objColor)
+function [canvasSeg,canvasPose] = dispObjPose(canvasSeg,canvasPose,colorFrame,depthFrame,extCam2World,K,objCloud,objPoseWorld,objColor)
 %DISPOBJPOSE Summary of this function goes here
 %   Detailed explanation goes here
 
@@ -31,9 +31,9 @@ objMask(sub2ind(size(objMask),objPixY',objPixX')) = 1;
 % axisPixX = round(((camAxisPts(1,:).*K(1,1))./camAxisPts(3,:))+K(1,3));
 % axisPixY = round(((camAxisPts(2,:).*K(2,2))./camAxisPts(3,:))+K(2,3));
 % axisPts2D = [axisPixX; axisPixY];
-% canvas = insertShape(frame, 'canvas', [axisPts2D(:,1)',axisPts2D(:,2)'], 'LineWidth', 3,'Color', 'red');
-% canvas = insertShape(frame, 'canvas', [axisPts2D(:,1)',axisPts2D(:,3)'], 'LineWidth', 3,'Color', 'green');
-% canvas = insertShape(frame, 'canvas', [axisPts2D(:,1)',axisPts2D(:,4)'], 'LineWidth', 3,'Color', 'blue');                
+% canvasPose = insertShape(canvasPose, 'line', [axisPts2D(:,1)',axisPts2D(:,2)'], 'LineWidth', 5,'Color', 'red');
+% canvasPose = insertShape(canvasPose, 'line', [axisPts2D(:,1)',axisPts2D(:,3)'], 'LineWidth', 5,'Color', 'green');
+% canvasPose = insertShape(canvasPose, 'line', [axisPts2D(:,1)',axisPts2D(:,4)'], 'LineWidth', 5,'Color', 'blue');                
 
 % Compute object bounding box
 bboxRange = [min(objPts(1,:)),max(objPts(1,:));min(objPts(2,:)),max(objPts(2,:));min(objPts(3,:)),max(objPts(3,:))];
@@ -74,27 +74,36 @@ for fillIdx = 1:20
 end
 
 % Draw projected object + segmentation
+canvasR = double(canvasSeg(:,:,1));
+canvasG = double(canvasSeg(:,:,2));
+canvasB = double(canvasSeg(:,:,3));
+canvasR(find(objMask)) = objColor(1); %(frameR(find(objMask))+objColor(1))./2;
+canvasG(find(objMask)) = objColor(2); %(frameG(find(objMask))+objColor(2))./2;
+canvasB(find(objMask)) = objColor(3); %(frameB(find(objMask))+objColor(3))./2;
+canvasSeg(:,:,1) = uint8(round(canvasR));
+canvasSeg(:,:,2) = uint8(round(canvasG));
+canvasSeg(:,:,3) = uint8(round(canvasB));
 frameR = double(colorFrame(:,:,1));
 frameG = double(colorFrame(:,:,2));
 frameB = double(colorFrame(:,:,3));
-canvasR = double(canvas(:,:,1));
-canvasG = double(canvas(:,:,2));
-canvasB = double(canvas(:,:,3));
+canvasR = double(canvasPose(:,:,1));
+canvasG = double(canvasPose(:,:,2));
+canvasB = double(canvasPose(:,:,3));
 canvasR(find(objMask)) = (frameR(find(objMask))+objColor(1))./2;
 canvasG(find(objMask)) = (frameG(find(objMask))+objColor(2))./2;
 canvasB(find(objMask)) = (frameB(find(objMask))+objColor(3))./2;
-canvas(:,:,1) = uint8(round(canvasR));
-canvas(:,:,2) = uint8(round(canvasG));
-canvas(:,:,3) = uint8(round(canvasB));
+canvasPose(:,:,1) = uint8(round(canvasR));
+canvasPose(:,:,2) = uint8(round(canvasG));
+canvasPose(:,:,3) = uint8(round(canvasB));
 
 % Draw object bounding box
 [~,furthestCornerIdx] = max(cornerPtsCam(3,:));
 connections = [1,2;2,3;3,4;4,1;5,6;6,7;7,8;8,5;1,5;2,6;3,7;4,8];
 for connIdx = 1:size(connections,1)
     if ismember(furthestCornerIdx,connections(connIdx,:))
-        canvas = insertShape(canvas,'line',[cornerPts2D(:,connections(connIdx,1))',cornerPts2D(:,connections(connIdx,2))'],'LineWidth',5,'Color',objColor); % (TODO: add dotted lines to the occluded parts of the bounding box)
+        canvasPose = insertShape(canvasPose,'line',[cornerPts2D(:,connections(connIdx,1))',cornerPts2D(:,connections(connIdx,2))'],'LineWidth',5,'Color',objColor); % (TODO: add dotted lines to the occluded parts of the bounding box)
     else
-        canvas = insertShape(canvas,'line',[cornerPts2D(:,connections(connIdx,1))',cornerPts2D(:,connections(connIdx,2))'],'LineWidth',5,'Color',objColor);
+        canvasPose = insertShape(canvasPose,'line',[cornerPts2D(:,connections(connIdx,1))',cornerPts2D(:,connections(connIdx,2))'],'LineWidth',5,'Color',objColor);
     end
 end
 
