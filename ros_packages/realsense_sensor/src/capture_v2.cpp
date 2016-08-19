@@ -67,7 +67,7 @@ private:
   float * cloud_buffer_pts;
   uint8_t * cloud_buffer_rgb;
   uint16_t * cloud_buffer_depth;
-  uint16_t * cloud_buffer_depth_raw;
+  float * cloud_buffer_depth_raw;
   float * depth_cam_intrinsics;
   float * color_cam_intrinsics;
   float * depth2color_extrinsics;
@@ -147,7 +147,7 @@ public:
     cloud_buffer_pts = new float[frame_width * frame_height * 3];
     cloud_buffer_rgb = new uint8_t[frame_width * frame_height * 3];
     cloud_buffer_depth = new uint16_t[frame_width * frame_height];
-    cloud_buffer_depth_raw = new uint16_t[frame_width * frame_height];
+    cloud_buffer_depth_raw = new float[frame_width * frame_height];
     color_cam_intrinsics = new float[9];
     depth_cam_intrinsics = new float[9];
     depth2color_extrinsics = new float[12];
@@ -262,7 +262,7 @@ public:
 
         uint16_t raw_depth_value = depth_frame_raw[dy * depth_K.width + dx];
         float raw_depth_in_meters = (float)raw_depth_value * depth_scale;
-        cloud_buffer_depth_raw[dy * depth_K.width + dx] = (uint16_t) round(raw_depth_in_meters * 10000); // assuming depth is within 0-6 meter
+        cloud_buffer_depth_raw[dy * depth_K.width + dx] = raw_depth_in_meters; // assuming depth is within 0-6 meter
 
         // Add RGB data to global frame buffer
         cloud_buffer_rgb[(dy * color_K.width + dx) * 3 + 0] = color_frame[(dy * color_K.width + dx) * 3 + 0];

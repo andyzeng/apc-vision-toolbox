@@ -1,52 +1,27 @@
 cmake_minimum_required(VERSION 3.1.0)
 set(CMAKE_CXX_STANDARD 11)
-project(realsense_camera)
+project(marvin_fcn)
 
+## Find catkin macros and libraries
+## IF COMPONENTS list like find_package(catkin REQUIRED COMPONENTS xyz)
+## is used, also find other catkin packages
+
+## System dependencies are found with CMake's conventions
 find_package(catkin REQUIRED COMPONENTS
   roscpp
   message_generation
   geometry_msgs
   std_msgs
-  image_transport
 )
 
-find_package(catkin REQUIRED)
-find_package(OpenGL REQUIRED)
-find_package(PkgConfig REQUIRED)
-pkg_search_module(GLFW REQUIRED glfw3)
+find_package(OpenCV REQUIRED)
 
-# OpenCV
-find_package(OpenCV)
-
-# PCL
-find_package(PCL COMPONENTS
-  common
-  io
-)
-
-# If OpenCV and PCL exist, compile version that publishes point clouds
-IF (OpenCV_FOUND)
-  message("-- Found OpenCV version ${OPENCV_VERSION}: ${OPENCV_INCLUDE_DIRS}")
-  include_directories(${OPENCV_INCLUDE_DIRS})
-ENDIF ()
-
-IF (PCL_FOUND)
-  message("-- Found PCL version ${PCL_VERSION}: ${PCL_INCLUDE_DIRS}")
-  include_directories(${PCL_INCLUDE_DIRS})
-ENDIF ()
-
-## Find catkin macros and libraries
-## IF COMPONENTS list like find_package(catkin REQUIRED COMPONENTS xyz)
-## is used, also find other catkin packages
-# find_package(catkin REQUIRED COMPONENTS
-#   roscpp
-#   message_generation
-#   std_msgs
-# )
-
-## System dependencies are found with CMake's conventions
-# find_package(Boost REQUIRED COMPONENTS system)
-
+# CUDA and CUDNN
+find_package(CUDA REQUIRED)
+set(CUDA_HOST_COMPILER "c++")
+set(CUDA_NVCC_FLAGS "-std=c++11")
+set(CUDNN_INCLUDE_DIR /usr/local/cudnn/v5/include CACHE PATH "Path to cudnn header file")
+set(CUDNN_LIB_DIR /usr/local/cudnn/v5/lib64)
 
 ## Uncomment this IF the package has a setup.py. This macro ensures
 ## modules and global scripts declared therein get installed
@@ -78,15 +53,15 @@ ENDIF ()
 ##   * add every package in MSG_DEP_SET to generate_messages(DEPENDENCIES ...)
 
 ## Generate messages in the 'msg' folder
-# add_message_files(
-#   FILES
-#   ObjectHypothesis.msg
-# )
+add_message_files(
+  FILES
+  # ObjectHypothesis.msg
+)
 
 ## Generate services in the 'srv' folder
 add_service_files(
   FILES
-  StreamSensor.srv
+  DetectObjects.srv
 )
 
 ## Generate actions in the 'action' folder
@@ -99,7 +74,8 @@ add_service_files(
 ## Generate added messages and services with any dependencies listed here
 generate_messages(
   DEPENDENCIES
-  std_msgs  
+  std_msgs  # Or other packages containing msgs
+  geometry_msgs
 )
 
 ################################################
@@ -133,44 +109,46 @@ generate_messages(
 ## DEPENDS: system dependencies of this project that dependent projects also need
 # catkin_package(
  # INCLUDE_DIRS include
- # LIBRARIES apc_sensor
- # CATKIN_DEPENDS roscpp std_msgs
- # DEPENDS system_lib
+#  LIBRARIES apc_vision
+#  CATKIN_DEPENDS other_catkin_pkg
+#  DEPENDS system_lib
 # )
 
 ###########
 ## Build ##
 ###########
-# include_directories(include)
 
 ## Specify additional locations of header files
 ## Your package locations should be listed before other locations
 # include_directories(include)
-# include_directories(
-#   ${catkin_INCLUDE_DIRS}
-# )
 
 ## Declare a C++ library
-# add_library(apc_sensor
-#   src/${PROJECT_NAME}/apc_sensor.cpp
+# add_library(apc_vision
+#   src/${PROJECT_NAME}/apc_vision.cpp
 # )
 
 ## Add cmake target dependencies of the library
 ## as an example, code may need to be generated before libraries
 ## either from message generation or dynamic reconfigure
-# add_dependencies(apc_sensor ${${PROJECT_NAME}_EXPORTED_TARGETS} ${catkin_EXPORTED_TARGETS})
+# add_dependencies(apc_vision ${${PROJECT_NAME}_EXPORTED_TARGETS} ${catkin_EXPORTED_TARGETS})
+
+# Add C++ header/source files
+SET(HEADERS
+  include/depth_utils.h
+)
+SET(SOURCES
+  src/detect.cu
+  src/marvin.hpp
+)
 
 ## Declare a C++ executable
-# add_executable(apc_sensor_node src/apc_sensor_node.cpp)
-
-## Add cmake target dependencies of the executable
-## same as for the library above
-# add_dependencies(apc_sensor_node ${${PROJECT_NAME}_EXPORTED_TARGETS} ${catkin_EXPORTED_TARGETS})
-
-## Specify libraries to link a library or executable target against
-# target_link_libraries(apc_sensor_node
-#   ${catkin_LIBRARIES}
-# )
+include_directories(include /usr/local/include ${catkin_INCLUDE_DIRS} ${OpenCV_INCLUDE_DIR} ${CUDNN_INCLUDE_DIR})
+link_directories(${CUDNN_LIB_DIR} ${OpenCV_LIB_DIR})
+cuda_add_executable(detect ${SOURCES} ${HEADERS})
+target_link_libraries(detect ${catkin_LIBRARIES} realsense ${OpenCV_LIBS}
+                      pthread cudnn ${CUDA_CUBLAS_LIBRARIES} ${CUDA_LIBRARIES} ${CUDA_curand_LIBRARY})
+add_dependencies(detect ${PROJECT_NAME}_gencpp)
+add_dependencies(detect ${PROJECT_NAME}_generate_messages_cpp)
 
 #############
 ## Install ##
@@ -187,7 +165,7 @@ generate_messages(
 # )
 
 ## Mark executables and/or libraries for installation
-# install(TARGETS apc_sensor apc_sensor_node
+# install(TARGETS apc_vision apc_vision
 #   ARCHIVE DESTINATION ${CATKIN_PACKAGE_LIB_DESTINATION}
 #   LIBRARY DESTINATION ${CATKIN_PACKAGE_LIB_DESTINATION}
 #   RUNTIME DESTINATION ${CATKIN_PACKAGE_BIN_DESTINATION}
@@ -212,41 +190,10 @@ generate_messages(
 #############
 
 ## Add gtest based cpp test target and link libraries
-# catkin_add_gtest(${PROJECT_NAME}-test test/test_apc_sensor.cpp)
+# catkin_add_gtest(${PROJECT_NAME}-test test/test_apc_vision.cpp)
 # IF(TARGET ${PROJECT_NAME}-test)
 #   target_link_libraries(${PROJECT_NAME}-test ${PROJECT_NAME})
 # ENDIF()
 
 ## Add folders to be run by python nosetests
 # catkin_add_nosetests(test)
-
-
-# If OpenCV and PCL exist, compile version that publishes point clouds
-IF (OpenCV_FOUND AND PCL_FOUND)
-  message("-- Found both OpenCV and PCL! Compiling version (V2) that publishes point clouds")
-  SET(SOURCES
-    src/capture_v2.cpp
-    src/display.hpp
-  )
-ELSE ()
-  message("-- Either OpenCV or PCL is not found! Compiling LIGHT version (V1)")
-  SET(SOURCES
-    src/capture_v1.cpp
-    src/display.hpp
-  )
-ENDIF ()
-
-SET(HEADERS
-  include/stb_easy_font.h
-)
-
-## Declare a C++ executable
-include_directories(include ${catkin_INCLUDE_DIRS} ${GLFW_INCLUDE_DIRS} /usr/local/include)
-add_executable(capture ${SOURCES} ${HEADERS})
-IF (OpenCV_FOUND AND PCL_FOUND)
-  target_link_libraries(capture ${catkin_LIBRARIES} realsense ${OPENGL_LIBRARIES} ${GLFW_LIBRARIES} ${OpenCV_LIBS} ${PCL_LIBRARIES})
-ELSE ()
-  target_link_libraries(capture ${catkin_LIBRARIES} realsense ${OPENGL_LIBRARIES} ${GLFW_LIBRARIES})
-ENDIF ()
-add_dependencies(capture ${PROJECT_NAME}_gencpp)
-add_dependencies(capture ${PROJECT_NAME}_generate_messages_cpp)

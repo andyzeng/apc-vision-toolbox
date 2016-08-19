@@ -5,6 +5,7 @@ UNFINISHED ... PLEASE DO NOT USE
 ## Documentation
 * [Realsense Standalone](#realsense-standalone)
 * [Realsense ROS Package](#realsense-ros-package)
+* [Marvin FCN ROS Package](#marvin-fcn-ros-package)
 
 ## Realsense Standalone
 
@@ -60,14 +61,68 @@ See `ros_packages/realsense_camera`
  * Used for saving point clouds
 
 ### Compilation
-* Copy the ROS package `ros_packages/realsense_camera` into your catkin workspace source directory (e.g. `catkin_ws/src`)
-* If necessary, configure `realsense_camera/CMakeLists.txt` according to your respective dependencies
-* In your catkin workspace, compile the package with `catkin_make` 
-* Source `devel/setup.sh`
+1. Copy the ROS package `ros_packages/realsense_camera` into your catkin workspace source directory (e.g. `catkin_ws/src`)
+2. If necessary, configure `realsense_camera/CMakeLists.txt` according to your respective dependencies
+3. In your catkin workspace, compile the package with `catkin_make` 
+4. Source `devel/setup.sh`
 
 ### Usage
 * Start `roscore`
-* Run `rosrun realsense_camera capture` to stream data from the sensor and start the data capture service:
+* To start the RGB-D data capture service and stream data from the sensor, run: 
+
+```shell
+rosrun realsense_camera capture
+```
+
   * The service `/realsense_camera` returns data from the sensor (response data format described in `realsense_camera/srv/StreamSensor.srv`)
   * If you need a GL window to see the streamed RGB-D data, run `rosrun realsense_camera capture _display:=True`
  
+## Marvin FCN ROS Package
+
+A C++ ROS package for deep learning based object segmentation using [FCNs (Fully Convolutional Networks)](https://arxiv.org/abs/1411.4038) with [Marvin](http://marvin.is/), a lightweight GPU-only neural network framework. This package feeds RGB-D data forward through a pre-trained ConvNet to retrieve object segmentation results. The neural networks are trained offline with [Marvin](http://marvin.is/).
+
+See `ros_packages/marvin_fcn`
+
+### Dependencies
+
+1. [Realsense ROS Package](#realsense-ros-package)
+
+2. [CUDA 7.5](https://developer.nvidia.com/cuda-downloads) and [cuDNN 5](https://developer.nvidia.com/cudnn) to support [Marvin](http://marvin.is/). You may need to register with NVIDIA. Below are some additional steps to set up cuDNN 5. **NOTE** We highly recommend that you install different versions of cuDNN to different directories (e.g., ```/usr/local/cudnn/vXX```) because different software packages may require different versions.
+
+```shell
+LIB_DIR=lib$([[ $(uname) == "Linux" ]] && echo 64)
+CUDNN_LIB_DIR=/usr/local/cudnn/v5/$LIB_DIR
+echo LD_LIBRARY_PATH=$LD_LIBRARY_PATH:$CUDNN_LIB_DIR >> ~/.profile && ~/.profile
+
+tar zxvf cudnn*.tgz
+sudo cp cuda/$LIB_DIR/* $CUDNN_LIB_DIR/
+sudo cp cuda/include/* /usr/local/cudnn/v5/include/
+```
+3. OpenCV (tested with OpenCV 2.4.11)
+ * Used for saving images
+
+### Compilation
+1. Copy the ROS package `ros_packages/marvin_fcn` into your catkin workspace source directory (e.g. `catkin_ws/src`)
+2. If necessary, configure `realsense_camera/CMakeLists.txt` according to your respective dependencies
+3. In your catkin workspace, compile the package with `catkin_make` 
+4. Source `devel/setup.sh`
+
+change location of where net is loaded
+
+make sure where data is going to be read and written
+
+ros package to compute hha 
+
+`rosrun marvin_fcn detect _service_mode:=1 _write_directory:="/home/andyz/apc/toolbox/ros_pacges/catkin_ws/src/marvin_fcn/data"`
+
+`rosrun marvin_fcn detect _service_mode:=2 _read_directory:="/home/andyz/apc/toolbox/ros_packages/catkin_ws/src/marvin_fcn/data" _write_directory:="/home/andyz/apc/toolbox/ros_packages/catkin_ws/src/marvin_fcn/data"`
+
+`rosservice call /marvin_fcn ["elmers_washable_no_run_school_glue","expo_dry_erase_board_eraser"] 0 0`
+
+
+
+
+
+
+
+
