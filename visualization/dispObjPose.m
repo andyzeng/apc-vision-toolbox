@@ -24,17 +24,6 @@ objMask(sub2ind(size(objMask),objPixY',objPixX')) = 1;
 % end
 % hold off;
 
-% % Draw object axis
-% axisRange = [max(objPts(1,:)),max(objPts(2,:)),max(objPts(3,:))];                
-% axisPts = [[0;0;0],[axisRange(1);0;0],[0;axisRange(2);0],[0;0;axisRange(3)]];
-% camAxisPts = objPoseCam(1:3,1:3) * axisPts + repmat(objPoseCam(1:3,4),1,size(axisPts,2));
-% axisPixX = round(((camAxisPts(1,:).*K(1,1))./camAxisPts(3,:))+K(1,3));
-% axisPixY = round(((camAxisPts(2,:).*K(2,2))./camAxisPts(3,:))+K(2,3));
-% axisPts2D = [axisPixX; axisPixY];
-% canvasPose = insertShape(canvasPose, 'line', [axisPts2D(:,1)',axisPts2D(:,2)'], 'LineWidth', 5,'Color', 'red');
-% canvasPose = insertShape(canvasPose, 'line', [axisPts2D(:,1)',axisPts2D(:,3)'], 'LineWidth', 5,'Color', 'green');
-% canvasPose = insertShape(canvasPose, 'line', [axisPts2D(:,1)',axisPts2D(:,4)'], 'LineWidth', 5,'Color', 'blue');                
-
 % Compute object bounding box
 bboxRange = [min(objPts(1,:)),max(objPts(1,:));min(objPts(2,:)),max(objPts(2,:));min(objPts(3,:)),max(objPts(3,:))];
 bboxCorners = [[bboxRange(1,1);bboxRange(2,1);bboxRange(3,1)], ...
@@ -95,6 +84,17 @@ canvasB(find(objMask)) = (frameB(find(objMask))+objColor(3))./2;
 canvasPose(:,:,1) = uint8(round(canvasR));
 canvasPose(:,:,2) = uint8(round(canvasG));
 canvasPose(:,:,3) = uint8(round(canvasB));
+
+% % Draw object axis
+% axisRange = [max(objPts(1,:)),max(objPts(2,:)),max(objPts(3,:))];                
+% axisPts = [[0;0;0],[axisRange(1);0;0],[0;axisRange(2);0],[0;0;axisRange(3)]];
+% camAxisPts = objPoseCam(1:3,1:3) * axisPts + repmat(objPoseCam(1:3,4),1,size(axisPts,2));
+% axisPixX = round(((camAxisPts(1,:).*K(1,1))./camAxisPts(3,:))+K(1,3));
+% axisPixY = round(((camAxisPts(2,:).*K(2,2))./camAxisPts(3,:))+K(2,3));
+% axisPts2D = [axisPixX; axisPixY];
+% canvasPose = insertShape(canvasPose, 'line', [axisPts2D(:,1)',axisPts2D(:,2)'], 'LineWidth', 1,'Color', 'red');
+% canvasPose = insertShape(canvasPose, 'line', [axisPts2D(:,1)',axisPts2D(:,3)'], 'LineWidth', 1,'Color', 'green');
+% canvasPose = insertShape(canvasPose, 'line', [axisPts2D(:,1)',axisPts2D(:,4)'], 'LineWidth', 1,'Color', 'blue');                
 
 % Draw object bounding box
 [~,furthestCornerIdx] = max(cornerPtsCam(3,:));

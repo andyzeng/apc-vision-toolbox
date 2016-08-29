@@ -5,7 +5,7 @@ UNFINISHED ... PLEASE DO NOT USE
 ## Documentation
 * [Realsense Standalone](#realsense-standalone)
 * [Realsense ROS Package](#realsense-ros-package)
-* [Marvin FCN ROS Package](#marvin-fcn-ros-package)
+* [Deep Learning FCN ROS Package](#deep-learning-fcn-ros-package)
 
 ## Realsense Standalone
 
@@ -47,7 +47,7 @@ This ROS packages comes in two different versions. Which version is installed wi
 * Version #1: only returns RGB-D frame data on service calls (does not require OpenCV or PCL)
 * Version #2: returns RGB-D frame data on service calls and publishes 3D point clouds (requires OpenCV and PCL)
 
-See `ros_packages/realsense_camera`
+See `ros-packages/realsense_camera`
 
 ### Dependencies
 
@@ -77,17 +77,17 @@ rosrun realsense_camera capture
   * The service `/realsense_camera` returns data from the sensor (response data format described in `realsense_camera/srv/StreamSensor.srv`)
   * If you need a GL window to see the streamed RGB-D data, run `rosrun realsense_camera capture _display:=True`
  
-## Marvin FCN ROS Package
+## Deep Learning FCN ROS Package
 
-A C++ ROS package for deep learning based object segmentation using [FCNs (Fully Convolutional Networks)](https://arxiv.org/abs/1411.4038) with [Marvin](http://marvin.is/), a lightweight GPU-only neural network framework. This package feeds RGB-D data forward through a pre-trained ConvNet to retrieve object segmentation results. The neural networks are trained offline with [Marvin](http://marvin.is/).
+A C++ ROS package for deep learning based object segmentation using [FCNs (Fully Convolutional Networks)](https://arxiv.org/abs/1411.4038) with [Marvin](http://marvin.is/), a lightweight GPU-only neural network framework. This package feeds RGB-D data forward through a pre-trained ConvNet to retrieve object segmentation results. The neural networks are trained offline with Marvin.
 
-See `ros_packages/marvin_fcn`
+See `ros-packages/marvin_convnet`
 
 ### Dependencies
 
-1. [Realsense ROS Package](#realsense-ros-package)
+1. [Realsense ROS Package](#realsense-ros-package) needs to be compiled first.
 
-2. [CUDA 7.5](https://developer.nvidia.com/cuda-downloads) and [cuDNN 5](https://developer.nvidia.com/cudnn) to support [Marvin](http://marvin.is/). You may need to register with NVIDIA. Below are some additional steps to set up cuDNN 5. **NOTE** We highly recommend that you install different versions of cuDNN to different directories (e.g., ```/usr/local/cudnn/vXX```) because different software packages may require different versions.
+2. [CUDA 7.5](https://developer.nvidia.com/cuda-downloads) and [cuDNN 5](https://developer.nvidia.com/cudnn). You may need to register with NVIDIA. Below are some additional steps to set up cuDNN 5. **NOTE** We highly recommend that you install different versions of cuDNN to different directories (e.g., ```/usr/local/cudnn/vXX```) because different software packages may require different versions.
 
 ```shell
 LIB_DIR=lib$([[ $(uname) == "Linux" ]] && echo 64)
@@ -98,6 +98,7 @@ tar zxvf cudnn*.tgz
 sudo cp cuda/$LIB_DIR/* $CUDNN_LIB_DIR/
 sudo cp cuda/include/* /usr/local/cudnn/v5/include/
 ```
+
 3. OpenCV (tested with OpenCV 2.4.11)
  * Used for saving images
 
@@ -113,11 +114,11 @@ make sure where data is going to be read and written
 
 ros package to compute hha 
 
-`rosrun marvin_fcn detect _service_mode:=1 _write_directory:="/home/andyz/apc/toolbox/ros_pacges/catkin_ws/src/marvin_fcn/data"`
+`rosrun marvin_convnet detect _service_mode:=1 _write_directory:="/home/andyz/apc/toolbox/data/tmp"`
 
-`rosrun marvin_fcn detect _service_mode:=2 _read_directory:="/home/andyz/apc/toolbox/ros_packages/catkin_ws/src/marvin_fcn/data" _write_directory:="/home/andyz/apc/toolbox/ros_packages/catkin_ws/src/marvin_fcn/data"`
+`rosrun marvin_convnet detect _service_mode:=2 _read_directory:="/home/andyz/apc/toolbox/data/tmp" _write_directory:="/home/andyz/apc/toolbox/data/tmp"`
 
-`rosservice call /marvin_fcn ["elmers_washable_no_run_school_glue","expo_dry_erase_board_eraser"] 0 0`
+`rosservice call /marvin_convnet ["elmers_washable_no_run_school_glue","expo_dry_erase_board_eraser"] 0 0`
 
 
 

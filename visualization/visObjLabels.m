@@ -19,7 +19,7 @@ labelList = parseLabels(labelListFile);
 % Get set of colors
 colorPalette = getColorPalette();
 
-for entryIdx = 1:length(labelList)
+for entryIdx = 1416%1:length(labelList)
     labelEntry = labelList{entryIdx};
     if isempty(labelEntry)
         continue;
@@ -67,6 +67,11 @@ for entryIdx = 1:length(labelList)
     % Load RGB-D sequence data
     seqData = loadSeq(seqPath);
     
+    seqPath
+    if strcmp(seqData.env,'shelf')
+        continue;
+    end
+    
     % Apply calibrated camera poses to sequence data
     seqData = loadCalib(calibPath,seqData);
     
@@ -91,19 +96,19 @@ for entryIdx = 1:length(labelList)
         camLoc = camLoc(1:3,4);
     end
         
-    % Sort objects in the scene from back to front (X direction for shelf,
-    % Z direction for tote)
+    % Sort objects in the scene from furthest to closest to camera
     objOrderVal = zeros(1,length(objList));
     for objIdx=1:length(objList)
         objPoseWeb = reshape(objPose{objIdx},[4,4]);
         objPoseWorld = inv(extWorld2Web)*objPoseWeb;
         objOrderVal(objIdx) = sqrt(sum((objPoseWorld(1:3,4)-camLoc).^ 2));
     end
-    if strcmp(seqData.env,'shelf')
-        [~,objOrder] = sort(objOrderVal,'descend');
-    else
-        [~,objOrder] = sort(objOrderVal,'ascend');
-    end
+%     if strcmp(seqData.env,'shelf')
+%         [~,objOrder] = sort(objOrderVal,'descend');
+%     else
+%         [~,objOrder] = sort(objOrderVal,'ascend');
+%     end
+    [~,objOrder] = sort(objOrderVal,'descend');
         
     % Get random colors
     randColorIdx = randperm(length(colorPalette),length(objList));

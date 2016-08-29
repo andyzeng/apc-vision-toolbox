@@ -1,0 +1,11 @@
+---
+
+# Point cloud data
+float32[] cloudXYZ # 480x640x3 (row-major order) XYZ camera coordinates, (0,0,0) are invalid points
+uint8[] cloudRGB # 480x640x3 (row-major order) corresponding RGB values
+float32[] rawDepth # 480x640x1 (row-major order) corresponding raw depth values
+
+# Camera parameters
+float32[] colorCamIntrinsics # 3x3 (row-major order) color camera intrinsics
+float32[] depthCamIntrinsics # 3x3 (row-major order) depth camera intrinsics
+float32[] depth2colorExtrinsics # 3x4 (row-major order) extrinsics from depth camera to color camera

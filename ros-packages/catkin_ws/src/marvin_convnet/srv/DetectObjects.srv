@@ -1,0 +1,8 @@
+string[] ObjectNames    # List of object names in the scene
+int32 BinId             # Set depending the environment of the scene: -1 for tote, 0-11 for shelf 
+int32 FrameId           # Set the index of the frame in a sequence
+
+---
+
+int32 FrameId           # Return the index of the frame in a sequence
+

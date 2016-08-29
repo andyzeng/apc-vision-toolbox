@@ -1,0 +1,10 @@
+# List of candidate objects
+string SceneFiles # Directory containing RGB-D frames of the target scene
+string CalibrationFiles # Directory containing calibrated camera poses
+bool DoCalibration # Flag for calibration
+
+
+---
+
+# Detection information for each candidate object
+ObjectHypothesis[] Objects
