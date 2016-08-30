@@ -15,6 +15,11 @@ if reqMsg.DoCalibration
     sceneData = loadCalib(reqMsg.CalibrationFiles,sceneData);
 end
 
+% Fill holes in depth frames for scene
+for frameIdx = 1:length(sceneData.depthFrames)
+    sceneData.depthFrames{frameIdx} = fillHoles(sceneData.depthFrames{frameIdx});
+end
+
 % Load scene point cloud
 scenePointCloud = getScenePointCloud(sceneData);
 
@@ -37,7 +42,7 @@ end
 objList = sceneData.objects;
 uniqueObjectList = unique(objList);
 for objIdx = 1:length(uniqueObjectList)
-    tic;
+%     tic;
     objName = uniqueObjectList{objIdx};
     objNum = sum(ismember(objList,objName));
     objModel = objModels{find(ismember(objNames,objName))};
@@ -51,7 +56,7 @@ for objIdx = 1:length(uniqueObjectList)
     for duplicateIdx = 1:length(objPoses)
         respMsg.Objects = [respMsg.Objects; objPoses(duplicateIdx)];
     end
-    toc;
+%     toc;
 end
 resp = true;
 end

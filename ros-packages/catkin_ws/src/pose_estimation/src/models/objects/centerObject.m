@@ -2,7 +2,7 @@ clear all; close all;
 
 % Load object
 % objCloud = offLoader('data/models/book_joke.off');
-objName = 'woods_extension_cord';
+objName = 'dasani_water_bottle';
 objCloud = pcread(sprintf('%s.ply',objName));
 
 % % Downsample object
