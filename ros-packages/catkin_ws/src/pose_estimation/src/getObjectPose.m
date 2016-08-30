@@ -150,7 +150,7 @@ for instanceIdx = 1:objNum
   currObjSegCloud = pcdenoise(currObjSegCloud,'NumNeighbors',4);
   
   if size(currObjSegCloud.Location',2) < 200 % If object not found
-    currObjHypothesis = getEmptyObjectHypothesis(dataPath,objName,instanceIdx);
+    currObjHypothesis = getEmptyObjectHypothesis(scenePath,objName,instanceIdx);
     objHypotheses = [objHypotheses currObjHypothesis];
     continue;
   end
@@ -212,9 +212,9 @@ for instanceIdx = 1:objNum
   if strcmp(objName,'cherokee_easy_tee_shirt') || strcmp(objName,'kyjen_squeakin_eggs_plush_puppies') || strcmp(objName,'womens_knit_gloves') || strcmp(objName,'cloud_b_plush_bear')
     predObjPoseWorld = surfPCAPoseWorld;
     if saveResultImageVis
-      visualizeResults(surfPCAPoseWorld,latentPCA,surfCentroid,surfRangeWorld,predObjPoseWorld,predObjConfScore,dataPath,objName,instanceIdx,sceneData,fullCurrObjSegmPts,objMasks,objModel.Location');
+      visualizeResults(surfPCAPoseWorld,latentPCA,surfCentroid,surfRangeWorld,predObjPoseWorld,predObjConfScore,scenePath,objName,instanceIdx,sceneData,fullCurrObjSegmPts,objMasks,objModel.Location');
     end
-    currObjHypothesis = getObjectHypothesis(surfPCAPoseWorld,latentPCA,surfCentroid,surfRangeWorld,predObjPoseWorld,predObjConfScore,dataPath,objName,instanceIdx);
+    currObjHypothesis = getObjectHypothesis(surfPCAPoseWorld,latentPCA,surfCentroid,surfRangeWorld,predObjPoseWorld,predObjConfScore,scenePath,objName,instanceIdx);
     objHypotheses = [objHypotheses,currObjHypothesis];
     continue;
   end

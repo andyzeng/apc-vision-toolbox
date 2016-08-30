@@ -1,15 +1,14 @@
 clear all; close all;
 
-% Config options 
-labelListFile = 'labelList.csv';
-saveto_dir = 'visualizations';
+% User configurations (change me)
+labelListFile = './labelList.csv';
+saveto_dir = './visualizations';
 dataPath = '/home/andyz/apc/toolbox/data/benchmark';
-objCloudPath = '/home/andyz/apc/toolbox/data/pointclouds/objects';
+objCloudPath = '/home/andyz/apc/toolbox/ros-packages/catkin_ws/src/pose_estimation/src/models/objects';
 toolboxPath = '/home/andyz/apc/toolbox';
 
 % Add toolbox paths
-addpath(genpath(fullfile(toolboxPath,'rgbd_io')));
-addpath(genpath(fullfile(toolboxPath,'calibration')));
+addpath(genpath(fullfile(toolboxPath,'rgbd-utils')));
 
 mkdir(saveto_dir);
 
@@ -19,7 +18,7 @@ labelList = parseLabels(labelListFile);
 % Get set of colors
 colorPalette = getColorPalette();
 
-for entryIdx = 1416%1:length(labelList)
+for entryIdx = 1:length(labelList)
     labelEntry = labelList{entryIdx};
     if isempty(labelEntry)
         continue;
@@ -44,55 +43,56 @@ for entryIdx = 1416%1:length(labelList)
     % Find RGB-D sequence path 
     switch labelEntry.seqName(1:3)
         case 'ots'
-            seqPath = fullfile(dataPath,'office','test','shelf');
+            scenePath = fullfile(dataPath,'office','test','shelf');
             calibPath = fullfile(dataPath,'office','calibration');
         case 'ott'
-            seqPath = fullfile(dataPath,'office','test','tote');
+            scenePath = fullfile(dataPath,'office','test','tote');
             calibPath = fullfile(dataPath,'office','calibration');
         case 'wcp'
-            seqPath = fullfile(dataPath,'warehouse','competition','shelf');
+            scenePath = fullfile(dataPath,'warehouse','competition','shelf');
             calibPath = fullfile(dataPath,'warehouse','calibration');
         case 'wcs'
-            seqPath = fullfile(dataPath,'warehouse','competition','tote');
+            scenePath = fullfile(dataPath,'warehouse','competition','tote');
             calibPath = fullfile(dataPath,'warehouse','calibration');
         case 'wps'
-            seqPath = fullfile(dataPath,'warehouse','practice','shelf');
+            scenePath = fullfile(dataPath,'warehouse','practice','shelf');
             calibPath = fullfile(dataPath,'warehouse','calibration');
         case 'wpt'
-            seqPath = fullfile(dataPath,'warehouse','practice','tote');
+            scenePath = fullfile(dataPath,'warehouse','practice','tote');
             calibPath = fullfile(dataPath,'warehouse','calibration');
     end
-    seqPath = fullfile(seqPath,sprintf('seq-%s',labelEntry.seqName(4:7)));
+    scenePath = fullfile(scenePath,sprintf('scene-%s',labelEntry.seqName(4:7)));
     
     % Load RGB-D sequence data
-    seqData = loadSeq(seqPath);
-    
-    seqPath
-    if strcmp(seqData.env,'shelf')
-        continue;
-    end
+    sceneData = loadScene(scenePath);
+    fprintf('%s\n',scenePath);
     
     % Apply calibrated camera poses to sequence data
-    seqData = loadCalib(calibPath,seqData);
+    sceneData = loadCalib(calibPath,sceneData);
     
     % Create point cloud from sequence data
-    [~,seqCloud] = genPC(seqData);
+    scenePointCloud = getScenePointCloud(sceneData);
+    
+    % Convert point cloud from bin coordinates to world coordinates
+    scenePts = scenePointCloud.Location';
+    scenePts = sceneData.extBin2World(1:3,1:3)*scenePts+repmat(sceneData.extBin2World(1:3,4),1,size(scenePts,2));
+    scenePointCloud = pointCloud(scenePts','Color',scenePointCloud.Color);
     
     % Compute coordinate frame transform from world space to web space
     extWorld2Web = eye(4);
-    extWorld2Web(1,4) = -mean(seqCloud.XLimits);
-    extWorld2Web(2,4) = -mean(seqCloud.YLimits);
-    extWorld2Web(3,4) = -min(seqCloud.ZLimits);
+    extWorld2Web(1,4) = -mean(scenePointCloud.XLimits);
+    extWorld2Web(2,4) = -mean(scenePointCloud.YLimits);
+    extWorld2Web(3,4) = -min(scenePointCloud.ZLimits);
     axesSwap = eye(4);
     axesSwap(1:3,1:3) = vrrotvec2mat([1,0,0,-pi/2]);
     extWorld2Web = axesSwap*extWorld2Web;
     
     % Get center camera position
-    if strcmp(seqData.env,'shelf')
-        camLoc = seqData.extCam2World{8};
+    if strcmp(sceneData.env,'shelf')
+        camLoc = sceneData.extCam2World{8};
         camLoc = camLoc(1:3,4);
     else
-        camLoc = (seqData.extCam2World{8}+seqData.extCam2World{11})./2;
+        camLoc = (sceneData.extCam2World{8}+sceneData.extCam2World{11})./2;
         camLoc = camLoc(1:3,4);
     end
         
@@ -114,18 +114,19 @@ for entryIdx = 1416%1:length(labelList)
     randColorIdx = randperm(length(colorPalette),length(objList));
     
     % Visualize all objects in the scene
-    if strcmp(seqData.env,'shelf')
-        canvas = seqData.colorFrames{8};
+    if strcmp(sceneData.env,'shelf')
+        canvas = sceneData.colorFrames{8};
         canvasSeg = uint8(ones(size(canvas))*255);
         canvasPose = canvas;
     else
-        canvas1 = seqData.colorFrames{5};
-        canvas2 = seqData.colorFrames{14};
+        canvas1 = sceneData.colorFrames{5};
+        canvas2 = sceneData.colorFrames{14};
         canvasSeg1 = uint8(ones(size(canvas1))*255);
         canvasPose1 = canvas1;
         canvasSeg2 = uint8(ones(size(canvas2))*255);
         canvasPose2 = canvas2;
     end
+%     textPosY = 10;
     for objIdx=objOrder
     
         % Load object point cloud
@@ -137,40 +138,44 @@ for entryIdx = 1416%1:length(labelList)
 
         % Visualize object
         objColor = colorPalette{randColorIdx(objIdx)};
-        if strcmp(seqData.env,'shelf')
+        if strcmp(sceneData.env,'shelf')
             [canvasSeg,canvasPose] = dispObjPose(canvasSeg, ...
                                                  canvasPose, ...
-                                                 seqData.colorFrames{8}, ...
-                                                 seqData.depthFrames{8}, ...
-                                                 seqData.extCam2World{8}, ...
-                                                 seqData.colorK, ...
+                                                 sceneData.colorFrames{8}, ...
+                                                 sceneData.depthFrames{8}, ...
+                                                 sceneData.extCam2World{8}, ...
+                                                 sceneData.colorK, ...
                                                  objCloud, ...
                                                  objPoseWorld, ...
                                                  objColor);
         else
             [canvasSeg1,canvasPose1] = dispObjPose(canvasSeg1, ...
                                                    canvasPose1, ...
-                                                   seqData.colorFrames{5}, ...
-                                                   seqData.depthFrames{5}, ...
-                                                   seqData.extCam2World{5}, ...
-                                                   seqData.colorK, ...
+                                                   sceneData.colorFrames{5}, ...
+                                                   sceneData.depthFrames{5}, ...
+                                                   sceneData.extCam2World{5}, ...
+                                                   sceneData.colorK, ...
                                                    objCloud, ...
                                                    objPoseWorld, ...
                                                    objColor);
             [canvasSeg2,canvasPose2] = dispObjPose(canvasSeg2, ...
                                                    canvasPose2, ...
-                                                   seqData.colorFrames{14}, ...
-                                                   seqData.depthFrames{14}, ...
-                                                   seqData.extCam2World{14}, ...
-                                                   seqData.colorK, ...
+                                                   sceneData.colorFrames{14}, ...
+                                                   sceneData.depthFrames{14}, ...
+                                                   sceneData.extCam2World{14}, ...
+                                                   sceneData.colorK, ...
                                                    objCloud, ...
                                                    objPoseWorld, ...
                                                    objColor);
             canvasSeg = [canvasSeg1;canvasSeg2];
             canvasPose = [canvasPose1;canvasPose2];
         end
+            
+%         % Draw object name
+%         canvasPose = insertText(canvasPose,[10 textPosY],sprintf('%s',objList{objIdx}),'Font','LucidaSansDemiBold','FontSize',16,'TextColor',objColor,'BoxColor','black');
+%         textPosY = textPosY + 28;
     end
-    imwrite(canvasSeg,fullfile(saveto_dir,sprintf('%s.seg.png',labelEntry.seqName)));
+%     imwrite(canvasSeg,fullfile(saveto_dir,sprintf('%s.seg.png',labelEntry.seqName)));
     imwrite(canvasPose,fullfile(saveto_dir,sprintf('%s.pose.png',labelEntry.seqName)));
 end
 
