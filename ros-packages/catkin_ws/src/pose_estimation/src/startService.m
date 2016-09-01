@@ -11,6 +11,7 @@
 % LICENSE. Please retain this notice and LICENSE if you use 
 % this file (or any portion of it) in your project.
 % ---------------------------------------------------------
+cd(fileparts(which('startService.m')));
 
 % User configurations (change me)
 rgbdUtilsPath = '/home/andyz/apc/toolbox/rgbd-utils'; % Directory of RGB-D toolbox utilities

@@ -1,17 +1,14 @@
 function [objMasks,segmThresh,segmConfMaps] = getObjectMasks(dataPath,objName,frames)
 
 % Search through mask files in data directory
-maskFiles = dir(fullfile(dataPath,sprintf('*.%s.mask.bin',objName)));
+maskFiles = dir(fullfile(dataPath,'masks',sprintf('*.%s.mask.png',objName)));
 
 % Load segmentation confidence maps
 objMasks = {};
 segmConfMaps = {};
 segSum = zeros(480,640);
 for frameIdx = frames
-    segFileID = fopen(fullfile(dataPath,maskFiles(frameIdx).name),'r');
-    segConf = fread(segFileID,'single');
-    fclose(segFileID);
-    segConf = reshape(segConf,640,480)';
+    segConf = double(imread(fullfile(dataPath,'masks',maskFiles(frameIdx).name)))./65535;
     segSum = segSum + segConf;
     segmConfMaps{frameIdx} = segConf;
 end

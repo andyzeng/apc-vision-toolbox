@@ -135,20 +135,24 @@ generate_messages(
 # Add C++ header/source files
 SET(HEADERS
   include/depth_utils.h
-)
-SET(SOURCES
-  src/detect.cu
   src/marvin.hpp
 )
 
 ## Declare a C++ executable
 include_directories(include /usr/local/include ${catkin_INCLUDE_DIRS} ${OpenCV_INCLUDE_DIR} ${CUDNN_INCLUDE_DIR})
 link_directories(${CUDNN_LIB_DIR} ${OpenCV_LIB_DIR})
-cuda_add_executable(detect ${SOURCES} ${HEADERS})
+
+cuda_add_executable(detect src/detect.cu ${HEADERS})
 target_link_libraries(detect ${catkin_LIBRARIES} realsense ${OpenCV_LIBS}
                       pthread cudnn ${CUDA_CUBLAS_LIBRARIES} ${CUDA_LIBRARIES} ${CUDA_curand_LIBRARY})
 add_dependencies(detect ${PROJECT_NAME}_gencpp)
 add_dependencies(detect ${PROJECT_NAME}_generate_messages_cpp)
+
+cuda_add_executable(save_images src/save_images.cpp ${HEADERS})
+target_link_libraries(save_images ${catkin_LIBRARIES} realsense ${OpenCV_LIBS}
+                      pthread cudnn ${CUDA_CUBLAS_LIBRARIES} ${CUDA_LIBRARIES} ${CUDA_curand_LIBRARY})
+add_dependencies(save_images ${PROJECT_NAME}_gencpp)
+add_dependencies(save_images ${PROJECT_NAME}_generate_messages_cpp)
 
 #############
 ## Install ##

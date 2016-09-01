@@ -43,7 +43,7 @@ surfaceMean.Y = 0;
 surfaceMean.Z = 0;
 
 % Prepare ROS message 
-objectHypothesis = rosmessage('apc_posest/ObjectHypothesis');
+objectHypothesis = rosmessage('pose_estimation/ObjectHypothesis');
 objectHypothesis.Label = objName;
 objectHypothesis.Pose = poseMsg;
 objectHypothesis.Pca = pcaMsg;

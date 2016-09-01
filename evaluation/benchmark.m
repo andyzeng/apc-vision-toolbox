@@ -13,6 +13,7 @@
 % LICENSE. Please retain this notice and LICENSE if you use 
 % this file (or any portion of it) in your project.
 % ---------------------------------------------------------
+cd(fileparts(which('benchmark.m')));
 
 % User configurations (change me)
 tmpDataPath = '/home/andyz/apc/toolbox/data/tmp'; % Temporary directory used by marvin_convnet, where all RGB-D images and detection masks are saved
@@ -72,8 +73,12 @@ for sceneIdx = 1:length(sceneList)
 
     % Call marvin_convnet to do 2D object segmentation for each RGB-D frame
     fprintf('    [Segmentation] Frame ');
-    binIds = 'ABCDEFGHIJKL';
-    binNum = strfind(binIds,sceneData.binId)-1;
+    if strcmp(sceneData.env,'shelf')
+        binIds = 'ABCDEFGHIJKL';
+        binNum = strfind(binIds,sceneData.binId)-1;
+    else
+        binNum = -1;
+    end
     for frameIdx = 0:(numFrames-1)
         fprintf('%d ',frameIdx);
         [client,reqMsg] = rossvcclient('/marvin_convnet');
@@ -93,7 +98,10 @@ for sceneIdx = 1:length(sceneList)
         reqMsg.CalibrationFiles = '/home/andyz/apc/toolbox/data/benchmark/warehouse/calibration';
     end
     reqMsg.DoCalibration = true;
-    respMsg= call(client,reqMsg);
+    try
+        respMsg= call(client,reqMsg);
+    catch
+    end
 
     % Load results (predicted 6D object poses)
     resultFiles = dir(fullfile(tmpDataPath,'results/*.result.txt'));
@@ -134,8 +142,8 @@ for sceneIdx = 1:length(sceneList)
     end
     
     % Loop through each object and visualize predicted object pose
-    canvasPose = insertText(canvasPose,[10 10],'Confidence  :  Object','Font','LucidaSansDemiBold','FontSize',16,'TextColor','white','BoxColor','black');
-    textPosY = 38;
+    canvasPose = insertText(canvasPose,[10 10],'Confidence  :  Object','Font','LucidaSansDemiBold','FontSize',12,'TextColor','white','BoxColor','black');
+    textPosY = 32;
     for resultIdx = 1:length(resultFiles)
         currResult = results{sortIdx(resultIdx)};
         objColor = colorPalette{randColorIdx(resultIdx)};
@@ -178,8 +186,8 @@ for sceneIdx = 1:length(sceneList)
             canvasPose = [canvasPose1;canvasPose2];
         end
         
-        canvasPose = insertText(canvasPose,[10 textPosY],sprintf('  %f  :  %s',currResult.confScore,currResult.objName),'Font','LucidaSansDemiBold','FontSize',16,'TextColor',objColor,'BoxColor','black');
-        textPosY = textPosY + 28;
+        canvasPose = insertText(canvasPose,[10 textPosY],sprintf('  %f  :  %s',currResult.confScore,currResult.objName),'Font','LucidaSansDemiBold','FontSize',12,'TextColor',objColor,'BoxColor','black');
+        textPosY = textPosY + 22;
     end
     
     % Save visualization
