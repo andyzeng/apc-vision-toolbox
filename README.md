@@ -1,11 +1,13 @@
 # MIT-Princeton Vision Toolbox for the APC 2016
 
-UNFINISHED ... PLEASE DO NOT USE
+
 
 ## Documentation
 * [Realsense Standalone](#realsense-standalone)
 * [Realsense ROS Package](#realsense-ros-package)
 * [Deep Learning FCN ROS Package](#deep-learning-fcn-ros-package)
+* [FCN Training with Marvin](#fcn-training-with-marvin)
+* [Evaluation Code](#evaluation-code)
 
 ## Realsense Standalone
 
@@ -79,7 +81,7 @@ rosrun realsense_camera capture
  
 ## Deep Learning FCN ROS Package
 
-A C++ ROS package for deep learning based object segmentation using [FCNs (Fully Convolutional Networks)](https://arxiv.org/abs/1411.4038) with [Marvin](http://marvin.is/), a lightweight GPU-only neural network framework. This package feeds RGB-D data forward through a pre-trained ConvNet to retrieve object segmentation results. The neural networks are trained offline with Marvin.
+A C++ ROS package for deep learning based object segmentation using [FCNs (Fully Convolutional Networks)](https://arxiv.org/abs/1411.4038) with [Marvin](http://marvin.is/), a lightweight GPU-only neural network framework. This package feeds RGB-D data forward through a pre-trained ConvNet to retrieve object segmentation results. The neural networks are trained offline with Marvin (see [FCN Training with Marvin](#fcn-training-with-marvin)).
 
 See `ros-packages/marvin_convnet`
 
@@ -120,8 +122,45 @@ ros package to compute hha
 
 `rosservice call /marvin_convnet ["elmers_washable_no_run_school_glue","expo_dry_erase_board_eraser"] 0 0`
 
+## FCN Training with Marvin
 
+Code and models for training object segmentation using [FCNs (Fully Convolutional Networks)](https://arxiv.org/abs/1411.4038) with [Marvin](http://marvin.is/), a lightweight GPU-only neural network framework. Includes network architecture .json files in `convnet-training/models` and a Marvin data layer in `convnet-training/apc.hpp` that randomly samples images (RGB and HHA) from the segmentation training dataset [here](http://www.cs.princeton.edu/~andyz/apc2016).
 
+See `convnet-training`
+
+### Dependencies
+
+1. [CUDA 7.5](https://developer.nvidia.com/cuda-downloads) and [cuDNN 5](https://developer.nvidia.com/cudnn). You may need to register with NVIDIA. Below are some additional steps to set up cuDNN 5. **NOTE** We highly recommend that you install different versions of cuDNN to different directories (e.g., ```/usr/local/cudnn/vXX```) because different software packages may require different versions.
+
+```shell
+LIB_DIR=lib$([[ $(uname) == "Linux" ]] && echo 64)
+CUDNN_LIB_DIR=/usr/local/cudnn/v5/$LIB_DIR
+echo LD_LIBRARY_PATH=$LD_LIBRARY_PATH:$CUDNN_LIB_DIR >> ~/.profile && ~/.profile
+
+tar zxvf cudnn*.tgz
+sudo cp cuda/$LIB_DIR/* $CUDNN_LIB_DIR/
+sudo cp cuda/include/* /usr/local/cudnn/v5/include/
+```
+
+2. OpenCV (tested with OpenCV 2.4.11)
+ * Used for reading images
+
+### Setup Instructions
+1. Download segmentation training dataset from [here](http://www.cs.princeton.edu/~andyz/apc2016)
+2. Specify training dataset filepath in APCData layer of network architecture in `convnet-training/models/train_shelf_color.json`
+3. Navigate to `convnet-training/models/weights/` and run bash script `./download_weights.sh` to download VGG pre-trained weights on ImageNet (see [Marvin](http://marvin.is/) for more pre-trained weights)
+4. Navigate to `convnet-training/` and run in terminal `./compile.sh` to compile Marvin.
+5. Run in terminal `./marvin train models/rgb-fcn/train_shelf_color.json models/weights/vgg16_imagenet_half.marvin` to train a segmentation model on RGB-D data with objects in the shelf (for objects in the tote, use network architecture `models/rgb-fcn/train_shelf_color.json`).
+
+## Evaluation Code
+Code used to perform the experiments in the paper - tests the full vision system on the 'Shelf & Tote' benchmark dataset.
+
+See `evaluation`
+
+### Setup Instructions
+1. Download the full 'Shelf & Tote' benchmark dataset from [here](http://www.cs.princeton.edu/~andyz/apc2016) and extract its contents to `apc-vision-toolbox/data/benchmark` (e.g. `apc-vision-toolbox/data/benchmark/office`, `apc-vision-toolbox/data/benchmark/warehouse', etc.)
+2. In `evaluation/getError.m`, change the variable `benchmarkPath` to point to the filepath of your benchmark dataset directory
+3. We have provided our vision system's predictions in a saved Matlab .mat file `evaluation/predictions.mat`. To compute the accuracy of these predictions against the ground truth labels of the 'Shelf & Tote' benchmark dataset, run `evaluation/getError.m`
 
 
 

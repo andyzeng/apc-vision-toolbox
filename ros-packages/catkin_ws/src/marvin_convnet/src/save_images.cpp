@@ -1,3 +1,12 @@
+// ---------------------------------------------------------
+// Copyright (c) 2016, Andy Zeng
+// 
+// This file is part of the APC Vision Toolbox and is available 
+// under the terms of the Simplified BSD License provided in 
+// LICENSE. Please retain this notice and LICENSE if you use 
+// this file (or any portion of it) in your project.
+// ---------------------------------------------------------
+
 #include "depth_utils.h"
 #include "ros/ros.h"
 #include "marvin_convnet/DetectObjects.h"

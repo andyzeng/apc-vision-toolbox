@@ -1,3 +1,12 @@
+// ---------------------------------------------------------
+// Copyright (c) 2016, Andy Zeng
+// 
+// This file is part of the APC Vision Toolbox and is available 
+// under the terms of the Simplified BSD License provided in 
+// LICENSE. Please retain this notice and LICENSE if you use 
+// this file (or any portion of it) in your project.
+// ---------------------------------------------------------
+
 #include "depth_utils.h"
 #include "ros/ros.h"
 #include "marvin_convnet/DetectObjects.h"
@@ -75,20 +84,7 @@ bool srv_detect(marvin_convnet::DetectObjects::Request  &req,
       HHA_data_CPU[0 * frame_height * frame_width + r * frame_width + c] = CPUCompute2StorageT(ComputeT(HHA_buffer[0 + 3 * (c + frame_width * r)]) - ComputeT(102.9801f)); // B
       HHA_data_CPU[1 * frame_height * frame_width + r * frame_width + c] = CPUCompute2StorageT(ComputeT(HHA_buffer[1 + 3 * (c + frame_width * r)]) - ComputeT(115.9465f)); // G
       HHA_data_CPU[2 * frame_height * frame_width + r * frame_width + c] = CPUCompute2StorageT(ComputeT(HHA_buffer[2 + 3 * (c + frame_width * r)]) - ComputeT(122.7717f)); // R
-      // color_data_CPU[0 * frame_height * frame_width + r * frame_width + c] = CPUCompute2StorageT(ComputeT(color_buffer[0 * frame_height * frame_width + r * frame_width + c]) - ComputeT(102.9801f)); // B
-      // color_data_CPU[1 * frame_height * frame_width + r * frame_width + c] = CPUCompute2StorageT(ComputeT(color_buffer[1 * frame_height * frame_width + r * frame_width + c]) - ComputeT(115.9465f)); // G
-      // color_data_CPU[2 * frame_height * frame_width + r * frame_width + c] = CPUCompute2StorageT(ComputeT(color_buffer[2 * frame_height * frame_width + r * frame_width + c]) - ComputeT(122.7717f)); // R
-      // ROS_INFO("%f",CPUStorage2ComputeT(color_data_CPU[0 * frame_height * frame_width + r * frame_width + c]));
-      // ROS_INFO("%f",CPUStorage2ComputeT(color_data_CPU[1 * frame_height * frame_width + r * frame_width + c]));
-      // ROS_INFO("%f",CPUStorage2ComputeT(color_data_CPU[2 * frame_height * frame_width + r * frame_width + c]));
     } 
-
-  // for (int r = 0; r < frame_height; ++r)
-  //   for (int c = 0; c < frame_width; ++c) {
-  //     rgbCPUStorageT[ 0 * frame_height * frame_width + r * frame_width + c] = CPUCompute2StorageT(ComputeT( rgb_uint8[ 0 + 3 * (c + frame_width * r) ] ) - ComputeT(102.9801f)); // B
-  //     rgbCPUStorageT[ 1 * frame_height * frame_width + r * frame_width + c] = CPUCompute2StorageT(ComputeT( rgb_uint8[ 1 + 3 * (c + frame_width * r) ] ) - ComputeT(115.9465f)); // G
-  //     rgbCPUStorageT[ 2 * frame_height * frame_width + r * frame_width + c] = CPUCompute2StorageT(ComputeT( rgb_uint8[ 2 + 3 * (c + frame_width * r) ] ) - ComputeT(122.7717f)); // R
-  //   }
 
   // Run forward pass through marvin FCN
   ROS_INFO("Forward Marvin to get segmentation results.");
