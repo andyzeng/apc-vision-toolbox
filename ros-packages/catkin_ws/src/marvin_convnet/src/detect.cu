@@ -25,6 +25,7 @@ std::string net_directory;
 int frame_width = 640;
 int frame_height = 480;
 uint8_t * color_buffer = new uint8_t[frame_width * frame_height * 3];
+uint8_t * HHA_buffer = new uint8_t[frame_width * frame_height * 3];
 
 // Load Marvin FCN network architectures
 marvin::Net shelf_net(shelf_net_arch_filename);
@@ -32,6 +33,7 @@ marvin::Net tote_net(tote_net_arch_filename);
 
 // Marvin responses
 StorageT* color_data_CPU = NULL;
+StorageT* HHA_data_CPU = NULL;
 StorageT* prob_CPU_StorageT = NULL;
 ComputeT* prob_CPU_ComputeT = NULL;
 
@@ -56,10 +58,13 @@ bool srv_detect(marvin_convnet::DetectObjects::Request  &req,
   std::string color_frame_filename = "/frame-" + frame_prefix.str() + ".color.png";
   std::string depth_frame_filename = "/frame-" + frame_prefix.str() + ".depth.png";
   std::string raw_depth_frame_filename = "/raw/frame-" + frame_prefix.str() + ".depth.png";
+  std::string HHA_frame_filename = "/HHA/frame-" + frame_prefix.str() + ".HHA.png";
 
   // Read color frame from disk
   cv::Mat color_frame = cv::imread(read_directory + color_frame_filename, CV_LOAD_IMAGE_COLOR);
   color_buffer = color_frame.data;
+  cv::Mat HHA_frame = cv::imread(read_directory + HHA_frame_filename.c_str(), CV_LOAD_IMAGE_COLOR);
+  HHA_buffer = HHA_frame.data;
 
   // Color: BGR format, mean subtracted
   for (int r = 0; r < frame_height; ++r)
@@ -67,6 +72,9 @@ bool srv_detect(marvin_convnet::DetectObjects::Request  &req,
       color_data_CPU[0 * frame_height * frame_width + r * frame_width + c] = CPUCompute2StorageT(ComputeT(color_buffer[0 + 3 * (c + frame_width * r)]) - ComputeT(102.9801f)); // B
       color_data_CPU[1 * frame_height * frame_width + r * frame_width + c] = CPUCompute2StorageT(ComputeT(color_buffer[1 + 3 * (c + frame_width * r)]) - ComputeT(115.9465f)); // G
       color_data_CPU[2 * frame_height * frame_width + r * frame_width + c] = CPUCompute2StorageT(ComputeT(color_buffer[2 + 3 * (c + frame_width * r)]) - ComputeT(122.7717f)); // R
+      HHA_data_CPU[0 * frame_height * frame_width + r * frame_width + c] = CPUCompute2StorageT(ComputeT(HHA_buffer[0 + 3 * (c + frame_width * r)]) - ComputeT(102.9801f)); // B
+      HHA_data_CPU[1 * frame_height * frame_width + r * frame_width + c] = CPUCompute2StorageT(ComputeT(HHA_buffer[1 + 3 * (c + frame_width * r)]) - ComputeT(115.9465f)); // G
+      HHA_data_CPU[2 * frame_height * frame_width + r * frame_width + c] = CPUCompute2StorageT(ComputeT(HHA_buffer[2 + 3 * (c + frame_width * r)]) - ComputeT(122.7717f)); // R
       // color_data_CPU[0 * frame_height * frame_width + r * frame_width + c] = CPUCompute2StorageT(ComputeT(color_buffer[0 * frame_height * frame_width + r * frame_width + c]) - ComputeT(102.9801f)); // B
       // color_data_CPU[1 * frame_height * frame_width + r * frame_width + c] = CPUCompute2StorageT(ComputeT(color_buffer[1 * frame_height * frame_width + r * frame_width + c]) - ComputeT(115.9465f)); // G
       // color_data_CPU[2 * frame_height * frame_width + r * frame_width + c] = CPUCompute2StorageT(ComputeT(color_buffer[2 * frame_height * frame_width + r * frame_width + c]) - ComputeT(122.7717f)); // R
@@ -84,16 +92,20 @@ bool srv_detect(marvin_convnet::DetectObjects::Request  &req,
 
   // Run forward pass through marvin FCN
   ROS_INFO("Forward Marvin to get segmentation results.");
-  marvin::Response * rData;
+  marvin::Response * rDataRGB;
+  marvin::Response * rDataHHA;
   marvin::Response * rProb;
   if (bin_id == -1) {
-    rData = tote_net.getResponse("data");
+    rDataRGB = tote_net.getResponse("data_RGB");
+    rDataHHA = tote_net.getResponse("data_HHA");
     rProb = tote_net.getResponse("prob");
   } else {
-    rData = shelf_net.getResponse("data");
+    rDataRGB = shelf_net.getResponse("data_RGB");
+    rDataHHA = shelf_net.getResponse("data_HHA");
     rProb = shelf_net.getResponse("prob");
   }
-  cudaMemcpy(rData->dataGPU, color_data_CPU, rData->numBytes(), cudaMemcpyHostToDevice);
+  cudaMemcpy(rDataRGB->dataGPU, color_data_CPU, rDataRGB->numBytes(), cudaMemcpyHostToDevice);
+  cudaMemcpy(rDataHHA->dataGPU, HHA_data_CPU, rDataHHA->numBytes(), cudaMemcpyHostToDevice);
   if (bin_id == -1)
     tote_net.forward();
   else
@@ -103,7 +115,7 @@ bool srv_detect(marvin_convnet::DetectObjects::Request  &req,
     prob_CPU_ComputeT[i] = CPUStorage2ComputeT(prob_CPU_StorageT[i]);
 
   // Get full object list
-  std::vector<std::string> all_object_names = {"background", "barkely_hide_bones", "cherokee_easy_tee_shirt", "clorox_utility_brush", "cloud_b_plush_bear", "cool_shot_glue_sticks", "command_hooks", "crayola_24_ct", "creativity_chenille_stems", "dasani_water_bottle",
+  std::vector<std::string> all_object_names = {"background", "barkely_hide_bones", "cherokee_easy_tee_shirt", "clorox_utility_brush", "cloud_b_plush_bear", "command_hooks", "cool_shot_glue_sticks", "crayola_24_ct", "creativity_chenille_stems", "dasani_water_bottle",
                                                "dove_beauty_bar", "dr_browns_bottle_brush", "easter_turtle_sippy_cup", "elmers_washable_no_run_school_glue", "expo_dry_erase_board_eraser", "fiskars_scissors_red", "fitness_gear_3lb_dumbbell", "folgers_classic_roast_coffee", "hanes_tube_socks", "i_am_a_bunny_book",
                                                "jane_eyre_dvd", "kleenex_paper_towels", "kleenex_tissue_box", "kyjen_squeakin_eggs_plush_puppies", "laugh_out_loud_joke_book", "oral_b_toothbrush_green", "oral_b_toothbrush_red", "peva_shower_curtain_liner", "platinum_pets_dog_bowl", "rawlings_baseball",
                                                "rolodex_jumbo_pencil_cup", "safety_first_outlet_plugs", "scotch_bubble_mailer", "scotch_duct_tape", "soft_white_lightbulb", "staples_index_cards", "ticonderoga_12_pencils", "up_glucose_bottle", "womens_knit_gloves", "woods_extension_cord"};
@@ -171,6 +183,7 @@ int main(int argc, char **argv) {
   shelf_net.loadWeights(shelf_net_weights_filename);
   tote_net.loadWeights(tote_net_weights_filename);
   color_data_CPU = new StorageT[frame_width * frame_height * 3];
+  HHA_data_CPU = new StorageT[frame_width * frame_height * 3];
   prob_CPU_StorageT = new StorageT[frame_width * frame_height * (num_apc_objects + 1)];
   prob_CPU_ComputeT = new ComputeT[frame_height * frame_width * (num_apc_objects + 1)];
 
