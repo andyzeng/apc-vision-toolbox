@@ -7,6 +7,8 @@ Toolbox code for our vision system that took 3rd and 4th place at the Amazon Pic
 
 Warehouse automation has attracted significant interest in recent years, perhaps most visibly by the Amazon Picking Challenge (APC). Achieving a fully autonomous pick-and-place system requires a robust vision system that reliably recognizes objects and their 6D poses. However, a solution eludes the warehouse setting due to cluttered environments, self-occlusion, sensor noise, and a large variety of objects. In this paper, we present a vision system that took 3rd- and 4th- place in the stowing and picking tasks, respectively at APC 2016. Our approach leverages multi-view RGB-D data and data-driven, self-supervised learning to overcome the aforementioned difficulties. More specifically, we first segment and label multiple views of a scene with a fully convolutional neural network, and then fit pre-scanned 3D object models to the resulting segmentation to get the 6D object pose. Training a deep neural network for segmentation typically requires a large amount of training data with manual labels. We propose a self-supervised method to generate a large labeled dataset without tedious manual segmentation that could be scaled up to more object categories easily. We demonstrate that our system can reliably estimate the 6D pose of objects under a variety of scenarios.
 
+![alt tag](https://github.com/andyzeng/apc-vision-toolbox/teaser.png)
+
 #### Citing
 
 If you find this code useful in your work, please consider citing:
@@ -25,9 +27,12 @@ If you find this code useful in your work, please consider citing:
 This code is released under the Simplified BSD License (refer to the LICENSE file for details).
 
 #### Datasets
-All dataset information and downloads can be found [here](http://www.cs.princeton.edu/~andyz/apc2016).
+All relevant dataset information and downloads can be found [here](http://www.cs.princeton.edu/~andyz/apc2016).
 
-#### Documentation
+#### Contact
+If you have any questions or find any bugs, please let me know: [Andy Zeng](http://www.cs.princeton.edu/~andyz/) (andyz[at]princeton[dot]edu)
+
+## Documentation
 * [A Quick Start: Matlab Demo](#a-quick-start-matlab-demo)
 * [6D Pose Estimation ROS Package](#6d-pose-estimation-ros-package)
 * [Realsense Standalone](#realsense-standalone)
@@ -35,6 +40,7 @@ All dataset information and downloads can be found [here](http://www.cs.princeto
 * [Deep Learning FCN ROS Package](#deep-learning-fcn-ros-package)
 * [FCN Training with Marvin](#fcn-training-with-marvin)
 * [Evaluation Code](#evaluation-code)
+* [RGB-D Annotator](#rgb-d-annotator)
 
 ## A Quick-Start: Matlab Demo
 Estimates 6D object poses on the sample scene data (in `data/sample`) with pre-computed object segmentation results from [Deep Learning FCN ROS Package](#deep-learning-fcn-ros-package):
@@ -244,7 +250,8 @@ See `evaluation`
 2. In `evaluation/getError.m`, change the variable `benchmarkPath` to point to the filepath of your benchmark dataset directory
 3. We have provided our vision system's predictions in a saved Matlab .mat file `evaluation/predictions.mat`. To compute the accuracy of these predictions against the ground truth labels of the 'Shelf & Tote' benchmark dataset, run `evaluation/getError.m`
 
-
+## RGB-D Annotator
+An online WebGL-based tool for annotating ground truth 6D object poses on RGB-D data. Follows an implementation of [RGB-D Annotator](https://github.com/danielsuo/rgbd-annotator) with light changes.
 
 
 
