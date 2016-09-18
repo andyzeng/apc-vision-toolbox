@@ -1,6 +1,5 @@
 % User configurations (change me)
 toolboxPath = '../../../../..'; % Directory of toolbox utilities
-tmpDataPath = fullfile(toolboxPath,'data/tmp'); % Temporary directory used by marvin_convnet, where all RGB-D images and detection masks are saved
 modelsPath = './models/objects'; % Directory holding pre-scanned object models
 scenePath = fullfile(toolboxPath,'data/sample/scene-0000'); % Directory holding the RGB-D data of the sample scene
 calibPath = fullfile(toolboxPath,'data/sample/calibration'); % Directory holding camera pose calibration data for the sample scene
@@ -14,7 +13,7 @@ load('colorPalette.mat');
 
 % Load sample scene data
 fprintf('    [Processing] Loading scene RGB-D data\n');
-sceneData = loadScene(tmpDataPath);
+sceneData = loadScene(scenePath);
 numFrames = length(sceneData.colorFrames);
 
 % Calibrate scene
@@ -122,12 +121,12 @@ for objIdx = 1:length(uniqueObjectList)
     end
 
     % Do 6D pose estimation for each object and save the results
-    objPoses = getObjectPose(tmpDataPath,sceneData,scenePointCloud,backgroundPointCloud,extBin2Bg,objName,objModel,objNum);
+    objPoses = getObjectPose(scenePath,sceneData,scenePointCloud,backgroundPointCloud,extBin2Bg,objName,objModel,objNum);
 end
 
 fprintf('    [Visualization] Drawing predicted object poses\n');
 % Load results (predicted 6D object poses)
-resultFiles = dir(fullfile(tmpDataPath,'results/*.result.txt'));
+resultFiles = dir(fullfile(scenePath,'results/*.result.txt'));
 results = cell(1,length(resultFiles));
 confScores = [];
 for resultIdx = 1:length(resultFiles)
@@ -136,10 +135,10 @@ for resultIdx = 1:length(resultFiles)
     tmpResult.objName = tmpResultFile(1:(tmpResultFilenameDotIdx(1)-1));
     tmpResult.objNum = str2double(tmpResultFile((tmpResultFilenameDotIdx(1)+1):(tmpResultFilenameDotIdx(2)-1)));
     tmpResult.objPoseWorld = eye(4);
-    tmpResult.objPoseWorld(1:3,4) = dlmread(fullfile(tmpDataPath,'results',tmpResultFile),'\t',[1,0,1,2])';
-    objPoseRotQuat = dlmread(fullfile(tmpDataPath,'results',tmpResultFile),'\t',[4,0,4,3]);
+    tmpResult.objPoseWorld(1:3,4) = dlmread(fullfile(scenePath,'results',tmpResultFile),'\t',[1,0,1,2])';
+    objPoseRotQuat = dlmread(fullfile(scenePath,'results',tmpResultFile),'\t',[4,0,4,3]);
     tmpResult.objPoseWorld(1:3,1:3) = quat2rotm([objPoseRotQuat(4),objPoseRotQuat(1:3)]);
-    tmpResult.confScore = dlmread(fullfile(tmpDataPath,'results',tmpResultFile),'\t',[28,0,28,0]);
+    tmpResult.confScore = dlmread(fullfile(scenePath,'results',tmpResultFile),'\t',[28,0,28,0]);
     confScores = [confScores;tmpResult.confScore];
     results{resultIdx} = tmpResult;
 end
