@@ -1,4 +1,14 @@
 function objectHypothesis = getEmptyObjectHypothesis(scenePath,objName,instanceIdx)
+% Return ROS message with empty object pose
+%
+% ---------------------------------------------------------
+% Copyright (c) 2016, Andy Zeng
+% 
+% This file is part of the APC Vision Toolbox and is available 
+% under the terms of the Simplified BSD License provided in 
+% LICENSE. Please retain this notice and LICENSE if you use 
+% this file (or any portion of it) in your project.
+% ---------------------------------------------------------
 
 % Save object pose to ROS message
 poseTrans = rosmessage('geometry_msgs/Point');
@@ -55,8 +65,20 @@ objectHypothesis.RangeZ = [0 0];
 objectHypothesis.Score = 0;
 
 % Save ROS message to file
-fid = fopen(fullfile(scenePath,strcat(objName,sprintf('.%d.result.txt',instanceIdx))),'w');
-fprintf(fid,'%f\n',zeros(27,1));
+if ~exist(fullfile(scenePath,'results'),'file')
+    mkdir(fullfile(scenePath,'results'));
+end
+fid = fopen(fullfile(scenePath,'results',strcat(objName,sprintf('.%d.result.txt',instanceIdx))),'w');
+fprintf(fid,'# Predicted object pose translation (x,y,z in world coordinates)\n%15.8e\t %15.8e\t %15.8e\t\n\n',0,0,0);
+fprintf(fid,'# Predicted object pose rotation (x,y,z,w object-to-world quaternion)\n%15.8e\t %15.8e\t %15.8e\t %15.8e\t\n\n',0,0,0,0);
+fprintf(fid,'# Segmented object point cloud median (x,y,z in world coordinates)\n%15.8e\t %15.8e\t %15.8e\t\n\n',0,0,0);
+fprintf(fid,'# Segmented object point cloud PCA rotation (x,y,z,w object-to-world quaternion)\n%15.8e\t %15.8e\t %15.8e\t %15.8e\t\n\n',0,0,0,0);
+fprintf(fid,'# Segmented object point cloud PCA variance (in PC directions)\n%15.8e\t %15.8e\t %15.8e\t\n\n',0,0,0);
+fprintf(fid,'# Segmented object point cloud centroid/mean (x,y,z in world coordinates)\n%15.8e\t %15.8e\t %15.8e\t\n\n',0,0,0);
+fprintf(fid,'# Segmented object point cloud x-range in world coordinates (bounding box in x-direction)\n%15.8e\t %15.8e\t\n\n',0,0);
+fprintf(fid,'# Segmented object point cloud y-range in world coordinates (bounding box in y-direction)\n%15.8e\t %15.8e\t\n\n',0,0);
+fprintf(fid,'# Segmented object point cloud z-range in world coordinates (bounding box in z-direction)\n%15.8e\t %15.8e\t\n\n',0,0);
+fprintf(fid,'# Prediction confidence score\n%.17g\n',0);
 fclose(fid);
 
 end

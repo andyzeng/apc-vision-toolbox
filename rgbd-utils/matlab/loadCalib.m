@@ -6,8 +6,8 @@ function sceneData = loadCalib(calibDir,sceneData)
 % Input:
 %   calibDir  - file path to the folder that contains the set of relative 
 %               camera-to-camera poses generated from getCalib
-%   seqData   - data structure holding the contents (frames and camera
-%               information) of a captured RGB-D sequence
+%   sceneData - data structure holding the contents (frames and camera
+%               information) of a captured RGB-D scene
 % Output:
 %   sceneData - scene data with calibrated camera-to-world matrices
 %

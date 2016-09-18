@@ -1,8 +1,25 @@
-function objSegPts = denoisePointCloud(objSegPts)
+function objSegmPts = denoisePointCloud(objSegmPts)
+% Remove outlier points from the principal components (computed from PCA)
+% of a noisy point cloud
+%
+% function objSegPts = denoisePointCloud(objSegPts)
+% Input:
+%   objSegPts - 3xN float array of 3D points
+% Output:
+%   objSegPts - 3xN float array of 3D points
+%
+% ---------------------------------------------------------
+% Copyright (c) 2016, Andy Zeng
+% 
+% This file is part of the APC Vision Toolbox and is available 
+% under the terms of the Simplified BSD License provided in 
+% LICENSE. Please retain this notice and LICENSE if you use 
+% this file (or any portion of it) in your project.
+% ---------------------------------------------------------
 
 % Compute PCA for removing outliers from segmented point cloud
-coeffPCAoutlier = pca(objSegPts');
-currObjSegPtsAligned = (inv(coeffPCAoutlier) * (objSegPts - repmat(median(objSegPts,2),1,size(objSegPts,2))))';
+coeffPCAoutlier = pca(objSegmPts');
+currObjSegPtsAligned = (inv(coeffPCAoutlier) * (objSegmPts - repmat(median(objSegmPts,2),1,size(objSegmPts,2))))';
 
 % Find outliers from first principal component (local minima < 5%, maxima > 50%)
 currObjSegPtsDistPC1 = currObjSegPtsAligned(:,1);
@@ -50,7 +67,7 @@ PC3Range = [max([1,PC3MinLocs(find(PC3MinLocs < midBinDistPC3))]),min([length(hi
 PC3Range = (min(sortedObjSegPtsDistPC3)-0.005 + (PC3Range-1)*0.01);
 
 % Remove outliers
-objSegPts = objSegPts(:,find((currObjSegPtsDistPC1 > PC1Range(1)) & (currObjSegPtsDistPC1 < PC1Range(2)) & ...
+objSegmPts = objSegmPts(:,find((currObjSegPtsDistPC1 > PC1Range(1)) & (currObjSegPtsDistPC1 < PC1Range(2)) & ...
                              (currObjSegPtsDistPC2 > PC2Range(1)) & (currObjSegPtsDistPC2 < PC2Range(2)) & ...
                              (currObjSegPtsDistPC3 > PC3Range(1)) & (currObjSegPtsDistPC3 < PC3Range(2))));
 

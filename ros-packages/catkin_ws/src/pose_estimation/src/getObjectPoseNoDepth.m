@@ -1,4 +1,34 @@
 function [predObjPoseBin,surfCentroid,surfRange] = getObjectPoseNoDepth(visPath,objSegmPts,objName,frames,sceneData,objMasks)
+% Take in scene RGB-D data and segmentation confidence maps of a particular
+% object (with no depth) and predict a 6D pose using triangulation
+%
+% function [predObjPoseBin,surfCentroid,surfRange] = getObjectPoseNoDepth(visPath,objSegmPts,objName,frames,sceneData,objMasks)
+% Input:
+%   visPath     - directory to save point cloud visualization files
+%   objSegmPts  - 3xK float array of K 3D points of the segmented object
+%   objName     - name of the target object (aka. object ID)
+%   frames      - 1xN array indicating which frames of the RGB-D sequence
+%                 from sceneData to use
+%   sceneData   - data structure holding the contents (frames and camera
+%                 information) of a captured scene with N RGB-D frames
+%   objMasks    - 1xN cell array of 480x640 binary object masks (computed
+%                 from segmentation)
+%   segConfMaps - 1xN cell array of 480x640 confidence values from
+%                 segmentation
+% Output:
+%   predObjPoseBin - 4x4 predicted object pose in bin's coordinate system
+%                    object-to-bin (homogenous coordinates)
+%   surfCentroid   - predicted centroid of the object
+%   surfRange      - predicted object 3D bounding box
+%
+% ---------------------------------------------------------
+% Copyright (c) 2016, Andy Zeng
+% 
+% This file is part of the APC Vision Toolbox and is available 
+% under the terms of the Simplified BSD License provided in 
+% LICENSE. Please retain this notice and LICENSE if you use 
+% this file (or any portion of it) in your project.
+% ---------------------------------------------------------
 
 global savePointCloudVis;
 
@@ -23,21 +53,9 @@ for frameIdx = frames
   binGridPtsPix(1,:) = round((binGridPtsPix(1,:).*sceneData.colorK(1,1))./binGridPtsPix(3,:)+sceneData.colorK(1,3));
   binGridPtsPix(2,:) = round((binGridPtsPix(2,:).*sceneData.colorK(2,2))./binGridPtsPix(3,:)+sceneData.colorK(2,3));
   pixWithinImage = find((binGridPtsPix(1,:) <= 640) & (binGridPtsPix(1,:) > 0) & (binGridPtsPix(2,:) <= 480) & (binGridPtsPix(2,:) > 0));
-%     binGridPtsPix = binGridPtsPix(:,pixWithinImage);
-%     binGridPts = binGridPts(:,pixWithinImage);
   occupiedBinGridInd = pixWithinImage(find(currObjMask(sub2ind(size(currObjMask),binGridPtsPix(2,pixWithinImage)',binGridPtsPix(1,pixWithinImage)')) > 0));
-%     currBinGridPts = binGridPts(:,occupiedBinGridInd);
-%   imshow(objMasks{frameIdx})
-%   hold on; plot(binGridPtsPix(1,:)',binGridPtsPix(2,:)','.b'); hold off;
-%   binGridPtsPix = binGridPtsPix(:,occupiedBinGridInd);
   binGridOccupancy(occupiedBinGridInd) = binGridOccupancy(occupiedBinGridInd) + 1;
-%   hold on; plot(binGridPtsPix(1,:)',binGridPtsPix(2,:)','.r'); hold off;
 end
-
-%   objectPoseNoDepth = getObjectPoseNoDepth(objName,)
-%   getObjectHypothesis(RtPCA,latentPCA,finalRt,finalScore,dataPath,objName,instanceIdx);
-
-
 
 predObjPoseBin = eye(4);
 
@@ -49,7 +67,9 @@ objPts = binGridPts(:,bestGuessPtsInd);
 instanceIdx = 1;
 objPts = sortrows(objPts',1);
 objCentroid = median(objPts);
-predObjPoseBin(1:3,4) = objCentroid';
+if ~isempty(objPts)
+    predObjPoseBin(1:3,4) = objCentroid';
+end
 
 if strcmp(sceneData.env,'shelf')
   if strcmp(objName,'dasani_water_bottle')

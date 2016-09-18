@@ -1,4 +1,36 @@
 function objHypotheses = getObjectPose(scenePath,sceneData,scenePointCloud,backgroundPointCloud,extBin2Bg,objName,objModel,objNum)
+% Take in scene RGB-D data and information about a target object, and
+% predict the 6D pose for that object.
+%
+% function objHypotheses = getObjectPose(scenePath,sceneData,scenePointCloud,backgroundPointCloud,extBin2Bg,objName,objModel,objNum)
+% Input:
+%   scenePath            - file path to the folder holding RGB-D data of
+%                          the scene
+%   sceneData            - data structure holding the contents (frames and 
+%                          camera information) of a captured scene (has N
+%                          RGB-D frames)
+%   scenePointCloud      - data structure holding the point cloud of the scene
+%   backgroundPointCloud - data structure holding the background point cloud
+%   extBin2Bg            - 4x4 rigid transformation matrix (in homogeneous
+%                          coordinates) aligning the background point cloud
+%                          to the scene point cloud
+%   objName              - name of the target object (aka. object ID)
+%   objModel             - data structure holding the point cloud of the
+%                          pre-scanned object model
+%   objNum               - number of instances of the target object in the
+%                          scene
+% Output:
+%   objHypotheses        - ROS message with predicted 6D object pose (and
+%                          other information about the surface point cloud)
+%
+% ---------------------------------------------------------
+% Copyright (c) 2016, Andy Zeng
+% 
+% This file is part of the APC Vision Toolbox and is available 
+% under the terms of the Simplified BSD License provided in 
+% LICENSE. Please retain this notice and LICENSE if you use 
+% this file (or any portion of it) in your project.
+% ---------------------------------------------------------
 
 global visPath;
 global savePointCloudVis; 
@@ -14,19 +46,34 @@ objHypotheses = [];
 % Parameters specific to shelf or tote scenario
 if strcmp(sceneData.env,'tote')
   frames = [1 2 3 4 5 6 7 8 9 10 11 12 13 14 15 16 17 18];
+%   frames = [1 3 5 7 9 10 12 14 16 18];
+%   frames = [5 14];
   viewBounds = [-0.3, 0.3; -0.4, 0.4; -0.05, 0.2];
   pushBackAxis = [0; 0; -1];
 else
   frames = [1 2 3 4 5 6 7 8 9 10 11 12 13 14 15];
+%   frames = [1 5 8 11 15];
+%   frames = 8;
   viewBounds = [-0.01, 0.40; -0.17, 0.17; -0.06, 0.20];
   pushBackAxis = [1; 0; -1];
 end
 
-% Parse segmentation masks and return confidence threshold used
+% Parse segmentation masks and save confidence threshold used
 [objMasks,segmThresh,segmConfMaps] = getObjectMasks(scenePath,objName,frames);
+dlmwrite(fullfile(scenePath,'masks',sprintf('%s.thresh.txt',objName)),segmThresh);
 
 % Create segmented point cloud of object
 [objSegmPts,objSegmConf] = getSegmentedPointCloud(sceneData,frames,objMasks,segmConfMaps);
+
+% If no segmentation, return dummy pose
+if size(objSegmPts,2) < 200
+  fprintf('    [Pose Estimation] %s: 0.000000\n',objName);
+  for instanceIdx = 1:objNum
+    currObjHypothesis = getEmptyObjectHypothesis(scenePath,objName,instanceIdx);
+    objHypotheses = [objHypotheses,currObjHypothesis];
+  end
+  return;
+end
 
 % Handle objects without depth
 if strcmp(objName,'dasani_water_bottle') && strcmp(sceneData.env,'shelf') || ...
@@ -132,13 +179,13 @@ for instanceIdx = 1:objNum
   
   % Print segmentation confidence
   predObjConfScore = mean(instanceConf{instanceIdx});
-  if strcmp(objName,'dasani_water_bottle') && binID == -1
-    predObjConfScore = predObjConfScore/4;
+  if strcmp(objName,'dasani_water_bottle') && strcmp(sceneData.env,'tote')
+%     predObjConfScore = predObjConfScore/4;
   end
   if size(currObjSegmPts,2) < 100 % If object not found
     fprintf('    [Pose Estimation] %s: 0.000000\n',objName);
-    currObjHypothesis = getEmptyObjectHypothesis(dataPath,objName,instanceIdx);
-    objHypotheses = [objHypotheses currObjHypothesis];
+    currObjHypothesis = getEmptyObjectHypothesis(scenePath,objName,instanceIdx);
+    objHypotheses = [objHypotheses,currObjHypothesis];
     continue;
   else
     fprintf('    [Pose Estimation] %s: %f\n',objName,predObjConfScore);
@@ -281,18 +328,6 @@ for instanceIdx = 1:objNum
   end
 
   % Save pose as a rigid transform from model to world space
-  
-%   tmpAxisPts = finalRt(1:3,1:3) * axisPts + repmat(finalRt(1:3,4),1,size(axisPts,2));
-%   pcwrite(pointCloud(tmpAxisPts','Color',axisColors'),fullfile(visPath,sprintf('vis.objAxis.%s.%d',objName,instanceIdx)),'PLYFormat','binary');
-  
-%   if (finalRt(1) < viewBounds(1,1)) || (finalRt(1) > viewBounds(1,2)) || ...
-%      (finalRt(2) < viewBounds(2,1)) || (finalRt(2) > viewBounds(2,2)) || ...
-%      (finalRt(3) < viewBounds(3,1)) || (finalRt(3) > viewBounds(3,2))
-%     currObjectHypothesis = getEmptyObjectHypothesis(dataPath,objName,instanceIdx);
-%     objectHypotheses = [objectHypotheses currObjectHypothesis];
-%     continue;
-%   end
-  
   predObjPoseWorld = sceneData.extBin2World * predObjPoseBin;
   if saveResultImageVis
     visualizeResults(surfPCAPoseWorld,latentPCA,surfCentroid,surfRangeWorld,predObjPoseWorld,predObjConfScore,scenePath,objName,instanceIdx,sceneData,fullCurrObjSegmPts,objMasks,objModel.Location');

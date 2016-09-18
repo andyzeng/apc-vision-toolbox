@@ -2,12 +2,54 @@
 
 
 
+## A Quick-Start: Matlab Demo
+Estimates 6D object poses on the sample scene data (in `data/sample`) with pre-computed object segmentation results from [Deep Learning FCN ROS Package](#deep-learning-fcn-ros-package).
+1. 
+
+
 ## Documentation
+* [6D Pose Estimation ROS Package](#6d-pose-estimation-ros-package)
 * [Realsense Standalone](#realsense-standalone)
 * [Realsense ROS Package](#realsense-ros-package)
 * [Deep Learning FCN ROS Package](#deep-learning-fcn-ros-package)
 * [FCN Training with Marvin](#fcn-training-with-marvin)
 * [Evaluation Code](#evaluation-code)
+
+## 6D Pose Estimation ROS Package
+A Matlab ROS Package for estimating 6D object poses by model-fitting with ICP on RGB-D object segmentation results.
+
+### Dependencies
+1. [Deep Learning FCN ROS Package](#deep-learning-fcn-ros-package) and all of its respective dependencies.
+2. Recommended: Matlab 2015b or later
+
+### Compilation
+1. Copy the ROS package `ros_packages/.../pose_estimation` into your catkin workspace source directory (e.g. `catkin_ws/src`)
+2. Follow the instructions on the top of `pose_estimation/src/make.m` to compile ROS custom messages for Matlab
+3. Compile a GPU CUDA kernel function in `pose_estimation/src`:
+```shell
+nvcc -ptx KNNSearch.cu
+```
+
+### Usage
+* Start `roscore`
+* To start the pose estimation service, run `pose_estimation/src/startService.m`. At each call (see service request format described in `pose_estimation/srv/EstimateObjectPose.srv`), the service:
+ * Calibrates the camera poses of the scene using calibration data
+ * Perform 3D background subtraction
+ * For each object in the scene, use model-fitting to estimate its 6D pose
+
+### Demo
+1. Install all dependencies and compile this package
+2. Start `roscore` in terminal
+3. Create a temporary directory to be used by marvin_convnet for reading RGB-D data and saving segmentation masks
+ * `mkdir /path/to/your/data/tmp`
+4. `rosrun marvin_convnet detect _read_directory:="/path/to/your/data/tmp"`
+5. Navigate to `pose_estimation/src`
+6. Edit file paths and options on the top of `demo.m`
+6. Open Matlab and run:
+```shell
+startService.m
+demo.m
+```
 
 ## Realsense Standalone
 
@@ -63,7 +105,7 @@ See `ros-packages/realsense_camera`
  * Used for saving point clouds
 
 ### Compilation
-1. Copy the ROS package `ros_packages/realsense_camera` into your catkin workspace source directory (e.g. `catkin_ws/src`)
+1. Copy the ROS package `ros_packages/.../realsense_camera` into your catkin workspace source directory (e.g. `catkin_ws/src`)
 2. If necessary, configure `realsense_camera/CMakeLists.txt` according to your respective dependencies
 3. In your catkin workspace, compile the package with `catkin_make` 
 4. Source `devel/setup.sh`
@@ -105,26 +147,37 @@ sudo cp cuda/include/* /usr/local/cudnn/v5/include/
  * Used for saving images
 
 ### Compilation
-1. Copy the ROS package `ros_packages/marvin_fcn` into your catkin workspace source directory (e.g. `catkin_ws/src`)
+1. Copy the ROS package `ros_packages/.../marvin_convnet` into your catkin workspace source directory (e.g. `catkin_ws/src`)
 2. If necessary, configure `realsense_camera/CMakeLists.txt` according to your respective dependencies
 3. In your catkin workspace, compile the package with `catkin_make` 
 4. Source `devel/setup.sh`
 
-change location of where net is loaded
+### Usage
+* Navigate to `models/competition/` and run bash script `./download_weights.sh` to download our trained weights for object segmentation (trained on our [training dataset](http://www.cs.princeton.edu/~andyz/apc2016))
+* Edit `marvin_convnet/src/detect.cu`: Towards the top of the file, specify the filepath to the network architecture .json file and .marvin weights.
+* Create a folder called `tmp` in `apc-vision-toolbox/data` (e.g. `apc-vision-toolbox/data/tmp`). This where marvin_convnet will read/write RGB-D data. The format of the data in `tmp` follows the format of the scenes in our [datasets](http://www.cs.princeton.edu/~andyz/apc2016) and the format of the data saved by [Realsense Standalone](#realsense-standalone).
+* marvin_convnet offers two services: `save_images` and `detect`. The former retrieves RGB-D data from the [Realsense ROS Package](#realsense-ros-package) and writes to disk in the `tmp` folder, while the latter reads from disk in the `tmp` folder and feeds the RGB-D data forward through the FCN and saves the response images to disk 
+* To start the RGB-D data saving service, run: 
 
-make sure where data is going to be read and written
+```shell
+rosrun marvin_convnet save_images _write_directory:="/path/to/your/data/tmp" _camera_service_name:="/realsense_camera"
+```
 
-ros package to compute hha 
+* To start the FCN service, run:
 
-`rosrun marvin_convnet detect _service_mode:=1 _write_directory:="/home/andyz/apc/toolbox/data/tmp"`
+```shell
+rosrun marvin_convnet detect _read_directory:="/path/to/your/data/tmp" _service_name:="/marvin_convnet"
+```
 
-`rosrun marvin_convnet detect _service_mode:=2 _read_directory:="/home/andyz/apc/toolbox/data/tmp" _write_directory:="/home/andyz/apc/toolbox/data/tmp"`
+* Example ROS service call to do object segmentation for glue bottle and expo marker box (assuming the scene's RGB-D data is in the `tmp` folder):
 
-`rosservice call /marvin_convnet ["elmers_washable_no_run_school_glue","expo_dry_erase_board_eraser"] 0 0`
+```shell
+rosservice call /marvin_convnet ["elmers_washable_no_run_school_glue","expo_dry_erase_board_eraser"] 0 0
+```
 
 ## FCN Training with Marvin
 
-Code and models for training object segmentation using [FCNs (Fully Convolutional Networks)](https://arxiv.org/abs/1411.4038) with [Marvin](http://marvin.is/), a lightweight GPU-only neural network framework. Includes network architecture .json files in `convnet-training/models` and a Marvin data layer in `convnet-training/apc.hpp` that randomly samples images (RGB and HHA) from the segmentation training dataset [here](http://www.cs.princeton.edu/~andyz/apc2016).
+Code and models for training object segmentation using [FCNs (Fully Convolutional Networks)](https://arxiv.org/abs/1411.4038) with [Marvin](http://marvin.is/), a lightweight GPU-only neural network framework. Includes network architecture .json files in `convnet-training/models` and a Marvin data layer in `convnet-training/apc.hpp` that randomly samples RGB-D images (RGB and HHA) from our [segmentation training dataset](http://www.cs.princeton.edu/~andyz/apc2016).
 
 See `convnet-training`
 
@@ -146,19 +199,20 @@ sudo cp cuda/include/* /usr/local/cudnn/v5/include/
  * Used for reading images
 
 ### Setup Instructions
-1. Download segmentation training dataset from [here](http://www.cs.princeton.edu/~andyz/apc2016)
-2. Specify training dataset filepath in APCData layer of network architecture in `convnet-training/models/train_shelf_color.json`
-3. Navigate to `convnet-training/models/weights/` and run bash script `./download_weights.sh` to download VGG pre-trained weights on ImageNet (see [Marvin](http://marvin.is/) for more pre-trained weights)
+1. Download our [segmentation training dataset](http://www.cs.princeton.edu/~andyz/apc2016)
+2. Navigate to directory `convnet-training/`
+2. Specify training dataset filepath in APCData layer of network architecture in `models/train_shelf_color.json`
+3. Navigate to `models/weights/` and run bash script `./download_weights.sh` to download VGG pre-trained weights on ImageNet (see [Marvin](http://marvin.is/) for more pre-trained weights)
 4. Navigate to `convnet-training/` and run in terminal `./compile.sh` to compile Marvin.
 5. Run in terminal `./marvin train models/rgb-fcn/train_shelf_color.json models/weights/vgg16_imagenet_half.marvin` to train a segmentation model on RGB-D data with objects in the shelf (for objects in the tote, use network architecture `models/rgb-fcn/train_shelf_color.json`).
 
 ## Evaluation Code
-Code used to perform the experiments in the paper - tests the full vision system on the 'Shelf & Tote' benchmark dataset.
+Code used to perform the experiments in the paper; tests the full vision system on the 'Shelf & Tote' benchmark dataset.
 
 See `evaluation`
 
 ### Setup Instructions
-1. Download the full 'Shelf & Tote' benchmark dataset from [here](http://www.cs.princeton.edu/~andyz/apc2016) and extract its contents to `apc-vision-toolbox/data/benchmark` (e.g. `apc-vision-toolbox/data/benchmark/office`, `apc-vision-toolbox/data/benchmark/warehouse', etc.)
+1. Download our 'Shelf & Tote' benchmark dataset from [here](http://www.cs.princeton.edu/~andyz/apc2016) and extract its contents to `apc-vision-toolbox/data/benchmark` (e.g. `apc-vision-toolbox/data/benchmark/office`, `apc-vision-toolbox/data/benchmark/warehouse', etc.)
 2. In `evaluation/getError.m`, change the variable `benchmarkPath` to point to the filepath of your benchmark dataset directory
 3. We have provided our vision system's predictions in a saved Matlab .mat file `evaluation/predictions.mat`. To compute the accuracy of these predictions against the ground truth labels of the 'Shelf & Tote' benchmark dataset, run `evaluation/getError.m`
 

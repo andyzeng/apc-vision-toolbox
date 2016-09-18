@@ -1,4 +1,16 @@
 function resp = serviceCallback(~, reqMsg, respMsg)
+% Matlab service callback function for pose_estimation
+% Reads scene RGB-D data with object segmentation results, and predicts 
+% 6D object poses
+%
+% ---------------------------------------------------------
+% Copyright (c) 2016, Andy Zeng
+% 
+% This file is part of the APC Vision Toolbox and is available 
+% under the terms of the Simplified BSD License provided in 
+% LICENSE. Please retain this notice and LICENSE if you use 
+% this file (or any portion of it) in your project.
+% ---------------------------------------------------------
 
 global visPath;
 global savePointCloudVis; 
@@ -21,6 +33,7 @@ for frameIdx = 1:length(sceneData.depthFrames)
 end
 
 % Load scene point cloud
+fprintf('    [Processing] Loading scene point clouds\n');
 scenePointCloud = getScenePointCloud(sceneData);
 
 % Load and align empty bin/tote point cloud to observation
@@ -52,7 +65,6 @@ for objIdx = 1:length(uniqueObjectList)
 
     % Do 6D pose estimation for each object and save the results
     objPoses = getObjectPose(scenePath,sceneData,scenePointCloud,backgroundPointCloud,extBin2Bg,objName,objModel,objNum);
-%     objPoses = getObjectPose(tmpDataPath,visPath,totePosePath,data,backgroundPointCloud,extBin2Bg,objName,objModel,objNum,binId,savePointClouds,saveResultImages);
     for duplicateIdx = 1:length(objPoses)
         respMsg.Objects = [respMsg.Objects; objPoses(duplicateIdx)];
     end

@@ -1,4 +1,5 @@
 function [indices,dists] = multiQueryKNNSearchImplGPU(ptCloudB,locA)
+% GPU version of Matlab's multiQueryKNNSearchImpl
 
 global KNNSearchGPU
 

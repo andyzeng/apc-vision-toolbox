@@ -1,5 +1,6 @@
 function [tform, movingReg, rmse] = pcregrigidGPU(moving, fixed, varargin)
-%pcregrigid Register two point clouds with ICP algorithm.
+% GPU version of Matlab's pcregrigid
+% pcregrigid Register two point clouds with ICP algorithm.
 %   tform = pcregrigid(moving, fixed) returns the rigid transformation
 %   that registers the moving point cloud with the fixed point cloud. moving and
 %   fixed are pointCloud object. tform is an affine3d object that describes the rigid 

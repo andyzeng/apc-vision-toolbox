@@ -24,11 +24,9 @@ std::string tote_net_weights_filename = "/home/andyz/apc/toolbox/ros-packages/ca
 
 // Service modes and names
 std::string service_name;
-std::string camera_service_name;
 
 // Directory to read/write all RGB-D files and response maps
 std::string read_directory;
-std::string net_directory;
 
 // Global buffers for sensor data retrieval
 int frame_width = 640;
@@ -158,9 +156,7 @@ int main(int argc, char **argv) {
 
   // Get service parameters
   priv_nh.param("service_name", service_name, std::string("marvin_convnet"));
-  priv_nh.param("camera_service_name", camera_service_name, std::string("/realsense_camera"));
   priv_nh.param("read_directory", read_directory, std::string(""));
-  priv_nh.param("net_directory", net_directory, std::string(""));
 
   // Assert parameters and create folder to save segmentation masks
   assert(!read_directory.empty());

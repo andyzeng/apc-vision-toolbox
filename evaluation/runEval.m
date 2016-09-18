@@ -36,9 +36,9 @@ end
 load(fullfile(benchmarkPath,'scenes.mat'));
 
 % Get object names
-load('objectNames');
+load('objectNames.mat');
   
-% Get set of colors for visualizations
+% Get set of colors for visualizations (from vis-utils)
 load('colorPalette.mat');
 
 % Loop through benchmark scenes
