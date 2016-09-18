@@ -11,43 +11,67 @@ function objectHypothesis = getObjectHypothesis(surfPCAPoseWorld,latentPCA,surfC
 % ---------------------------------------------------------
 
 % Save object pose to ROS message
-poseTrans = rosmessage('geometry_msgs/Point');
+try
+    poseTrans = rosmessage('geometry_msgs/Point');
+catch
+end
 poseTrans.X = predObjPoseWorld(1,4);
 poseTrans.Y = predObjPoseWorld(2,4);
 poseTrans.Z = predObjPoseWorld(3,4);
-poseRot = rosmessage('geometry_msgs/Quaternion');
+try
+    poseRot = rosmessage('geometry_msgs/Quaternion');
+catch
+end
 poseQuat = rotm2quat(predObjPoseWorld(1:3,1:3));
 poseRot.X = poseQuat(2);
 poseRot.Y = poseQuat(3);
 poseRot.Z = poseQuat(4);
 poseRot.W = poseQuat(1);
-poseMsg = rosmessage('geometry_msgs/Pose');
+try
+    poseMsg = rosmessage('geometry_msgs/Pose');
+catch
+end
 poseMsg.Position = poseTrans;
 poseMsg.Orientation = poseRot;
 
 % Save PCA to ROS message
-pcaTrans = rosmessage('geometry_msgs/Point');
+try
+    pcaTrans = rosmessage('geometry_msgs/Point');
+catch
+end
 pcaTrans.X = surfPCAPoseWorld(1,4);
 pcaTrans.Y = surfPCAPoseWorld(2,4);
 pcaTrans.Z = surfPCAPoseWorld(3,4);
-pcaRot = rosmessage('geometry_msgs/Quaternion');
+try
+    pcaRot = rosmessage('geometry_msgs/Quaternion');
+catch
+end
 pcaQuat = rotm2quat(surfPCAPoseWorld(1:3,1:3));
 pcaRot.X = pcaQuat(2);
 pcaRot.Y = pcaQuat(3);
 pcaRot.Z = pcaQuat(4);
 pcaRot.W = pcaQuat(1);
-pcaMsg = rosmessage('geometry_msgs/Pose');
+try
+    pcaMsg = rosmessage('geometry_msgs/Pose');
+catch
+end
 pcaMsg.Position = pcaTrans;
 pcaMsg.Orientation = pcaRot;
 
 % Save PCA variances to ROS message
-pcaLatent = rosmessage('geometry_msgs/Point');
+try
+    pcaLatent = rosmessage('geometry_msgs/Point');
+catch
+end
 pcaLatent.X = latentPCA(1);
 pcaLatent.Y = latentPCA(2);
 pcaLatent.Z = latentPCA(3);
 
 % Save surface mean to ROS message
-surfaceMean = rosmessage('geometry_msgs/Point');
+try
+    surfaceMean = rosmessage('geometry_msgs/Point');
+catch
+end
 surfaceMean.X = surfCentroid(1);
 surfaceMean.Y = surfCentroid(2);
 surfaceMean.Z = surfCentroid(3);
