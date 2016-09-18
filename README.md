@@ -7,7 +7,7 @@ Toolbox code for our vision system that took 3rd and 4th place at the Amazon Pic
 
 Warehouse automation has attracted significant interest in recent years, perhaps most visibly by the Amazon Picking Challenge (APC). Achieving a fully autonomous pick-and-place system requires a robust vision system that reliably recognizes objects and their 6D poses. However, a solution eludes the warehouse setting due to cluttered environments, self-occlusion, sensor noise, and a large variety of objects. In this paper, we present a vision system that took 3rd- and 4th- place in the stowing and picking tasks, respectively at APC 2016. Our approach leverages multi-view RGB-D data and data-driven, self-supervised learning to overcome the aforementioned difficulties. More specifically, we first segment and label multiple views of a scene with a fully convolutional neural network, and then fit pre-scanned 3D object models to the resulting segmentation to get the 6D object pose. Training a deep neural network for segmentation typically requires a large amount of training data with manual labels. We propose a self-supervised method to generate a large labeled dataset without tedious manual segmentation that could be scaled up to more object categories easily. We demonstrate that our system can reliably estimate the 6D pose of objects under a variety of scenarios.
 
-![alt tag](https://github.com/andyzeng/apc-vision-toolbox/teaser.png)
+![Teaser](teaser.png?raw=true)
 
 #### Citing
 
