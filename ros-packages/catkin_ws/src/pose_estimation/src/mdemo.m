@@ -1,6 +1,6 @@
 % User configurations (change me)
-toolboxPath = '/home/andyz/apc/toolbox'; % Directory of toolbox utilities
-tmpDataPath = '/home/andyz/apc/toolbox/data/tmp'; % Temporary directory used by marvin_convnet, where all RGB-D images and detection masks are saved
+toolboxPath = '../../../..'; % Directory of toolbox utilities
+tmpDataPath = fullfile(toolboxPath,'data/tmp'); % Temporary directory used by marvin_convnet, where all RGB-D images and detection masks are saved
 modelsPath = './models/objects'; % Directory holding pre-scanned object models
 scenePath = fullfile(toolboxPath,'data/sample/scene-0000'); % Directory holding the RGB-D data of the sample scene
 calibPath = fullfile(toolboxPath,'data/sample/calibration'); % Directory holding camera pose calibration data for the sample scene
