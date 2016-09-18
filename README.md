@@ -1,10 +1,32 @@
-# Princeton Vision Toolbox for the APC 2016
+## Princeton Vision Toolbox for the APC 2016
+Toolbox code for our vision system that took 3rd and 4th place at the Amazon Picking Challenge 2016. Includes Realsense RGB-D sensor drivers (standalone and ROS package support), deep learning ROS package for 2D object segmentation (training and testing), ROS package for 6D pose estimation. This is the reference implementation of models and code for our paper:
 
+### Multi-view Self-supervised Deep Learning for 6D Pose Estimation in the Amazon Picking Challenge ([pdf](),[arxiv](),[webpage]())
 
+Warehouse automation has attracted significant interest in recent years, perhaps most visibly by the Amazon Picking Challenge (APC). Achieving a fully autonomous pick-and-place system requires a robust vision system that reliably recognizes objects and their 6D poses. However, a solution eludes the warehouse setting due to cluttered environments, self-occlusion, sensor noise, and a large variety of objects. In this paper, we present a vision system that took 3rd- and 4th- place in the stowing and picking tasks, respectively at APC 2016. Our approach leverages multi-view RGB-D data and data-driven, self-supervised learning to overcome the aforementioned difficulties. More specifically, we first segment and label multiple views of a scene with a fully convolutional neural network, and then fit pre-scanned 3D object models to the resulting segmentation to get the 6D object pose. Training a deep neural network for segmentation typically requires a large amount of training data with manual labels. We propose a self-supervised method to generate a large labeled dataset without tedious manual segmentation that could be scaled up to more object categories easily. We demonstrate that our system can reliably estimate the 6D pose of objects under a variety of scenarios.
 
+#### Citing
 
-## Documentation
-* [A Quick Start: Matlab Demo](#a-quick-start:-matlab-demo)
+If you find this code useful, please consider citing:
+
+```shell
+@incollection{zeng2016apcvision,
+  author = {Andy Zeng and Kuan-Ting Yu and Shuran Song and Daniel Suo and Ed Walker Jr. and Alberto Rodriguez and Jianxiong Xiao},
+  title = {Multi-view Self-supervised Deep Learning for 6D Pose Estimation in the Amazon Picking Challenge},
+  journal={arXiv},
+  year={2016}
+}
+```
+
+#### License
+
+This code is released under the Simplified BSD License (refer to the LICENSE file for details).
+
+### Datasets
+All dataset information and downloads can be found [here](http://www.cs.princeton.edu/~andyz/apc2016).
+
+### Documentation
+* [A Quick Start: Matlab Demo](#a-quick-start-matlab-demo)
 * [6D Pose Estimation ROS Package](#6d-pose-estimation-ros-package)
 * [Realsense Standalone](#realsense-standalone)
 * [Realsense ROS Package](#realsense-ros-package)
@@ -17,14 +39,14 @@ Estimates 6D object poses on the sample scene data (in `data/sample`) with pre-c
 
 1. `git clone https://github.com/andyzeng/apc-vision-toolbox.git` (Note: source repository size is ~300mb, cloning may take a while)
 2. `cd apc-vision-toolbox/ros-packages/catkin_ws/src/pose_estimation/src/`
-3. Start Matlab and run `mdemo.m`
+3. Start Matlab and run `mdemo`
 
 ## 6D Pose Estimation ROS Package
 A Matlab ROS Package for estimating 6D object poses by model-fitting with ICP on RGB-D object segmentation results.
 
 ### Dependencies
 1. [Deep Learning FCN ROS Package](#deep-learning-fcn-ros-package) and all of its respective dependencies.
-2. Recommended: Matlab 2015b or later
+2. Matlab 2015b or later
 
 ### Compilation
 1. Copy the ROS package `ros_packages/.../pose_estimation` into your catkin workspace source directory (e.g. `catkin_ws/src`)
