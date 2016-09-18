@@ -22,7 +22,11 @@ try
     poseRot = rosmessage('geometry_msgs/Quaternion');
 catch
 end
-poseQuat = rotm2quat(predObjPoseWorld(1:3,1:3));
+try
+    poseQuat = rotm2quat(predObjPoseWorld(1:3,1:3));
+catch
+    poseQuat = rot2quat(predObjPoseWorld(1:3,1:3));
+end
 poseRot.X = poseQuat(2);
 poseRot.Y = poseQuat(3);
 poseRot.Z = poseQuat(4);
@@ -46,7 +50,11 @@ try
     pcaRot = rosmessage('geometry_msgs/Quaternion');
 catch
 end
-pcaQuat = rotm2quat(surfPCAPoseWorld(1:3,1:3));
+try
+    pcaQuat = rotm2quat(surfPCAPoseWorld(1:3,1:3));
+catch
+    pcaQuat = rot2quat(surfPCAPoseWorld(1:3,1:3));
+end
 pcaRot.X = pcaQuat(2);
 pcaRot.Y = pcaQuat(3);
 pcaRot.Z = pcaQuat(4);

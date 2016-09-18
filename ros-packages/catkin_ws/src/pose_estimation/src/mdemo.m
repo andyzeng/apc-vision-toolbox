@@ -5,7 +5,7 @@ scenePath = fullfile(toolboxPath,'data/sample/scene-0000'); % Directory holding 
 calibPath = fullfile(toolboxPath,'data/sample/calibration'); % Directory holding camera pose calibration data for the sample scene
 
 % Add paths and create directories
-addpath(genpath('.'));
+addpath(genpath('./external'));
 addpath(genpath(fullfile(toolboxPath,'rgbd-utils')));
 addpath(genpath(fullfile(toolboxPath,'vis-utils')));
 
