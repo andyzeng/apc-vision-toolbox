@@ -1,4 +1,4 @@
-# Princeton Vision Toolbox for the APC 2016
+# MIT-Princeton Vision Toolbox for the APC 2016
 Toolbox code for our vision system that took 3rd and 4th place at the Amazon Picking Challenge 2016. Includes RGB-D Realsense sensor drivers (standalone and ROS package), deep learning ROS package for 2D object segmentation (training and testing), ROS package for 6D pose estimation. This is the reference implementation of models and code for our paper:
 
 ### Multi-view Self-supervised Deep Learning for 6D Pose Estimation in the Amazon Picking Challenge ([pdf](),[arxiv](),[webpage](http://www.cs.princeton.edu/~andyz/apc2016))
@@ -9,7 +9,7 @@ Warehouse automation has attracted significant interest in recent years, perhaps
 
 #### Citing
 
-If you find this code useful, please consider citing:
+If you find this code useful in your work, please consider citing:
 
 ```shell
 @incollection{zeng2016apcvision,
@@ -24,10 +24,10 @@ If you find this code useful, please consider citing:
 
 This code is released under the Simplified BSD License (refer to the LICENSE file for details).
 
-### Datasets
+#### Datasets
 All dataset information and downloads can be found [here](http://www.cs.princeton.edu/~andyz/apc2016).
 
-### Documentation
+#### Documentation
 * [A Quick Start: Matlab Demo](#a-quick-start-matlab-demo)
 * [6D Pose Estimation ROS Package](#6d-pose-estimation-ros-package)
 * [Realsense Standalone](#realsense-standalone)
