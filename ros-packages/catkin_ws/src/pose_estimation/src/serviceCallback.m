@@ -19,6 +19,7 @@ global objNames
 global objModels
 global emptyShelfModels;
 global emptyToteModel;
+global useGPU;
 
 % Load RGB-D frames for scene
 scenePath = reqMsg.SceneFiles;
@@ -43,7 +44,11 @@ if strcmp(sceneData.env,'shelf')
 else
     backgroundPointCloud = emptyToteModel;
 end
-[tform,backgroundPointCloud] = pcregrigidGPU(backgroundPointCloud,scenePointCloud,'InlierRatio',0.8,'MaxIterations',200,'Tolerance',[0.0001,0.0009],'Verbose',false,'Extrapolate',true);
+if useGPU
+    [tform,backgroundPointCloud] = pcregrigidGPU(backgroundPointCloud,scenePointCloud,'InlierRatio',0.8,'MaxIterations',200,'Tolerance',[0.0001,0.0009],'Verbose',false,'Extrapolate',true);
+else
+    [tform,backgroundPointCloud] = pcregrigid(backgroundPointCloud,scenePointCloud,'InlierRatio',0.8,'MaxIterations',200,'Tolerance',[0.0001,0.0009],'Verbose',false,'Extrapolate',true);
+end
 extBin2Bg = inv(tform.T');
 
 if savePointCloudVis

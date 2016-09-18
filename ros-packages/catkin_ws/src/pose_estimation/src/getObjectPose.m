@@ -37,6 +37,7 @@ global savePointCloudVis;
 global saveResultImageVis;
 global emptyShelfModels;
 global emptyToteModel;
+global useGPU;
 
 % Parameters for both shelf and tote scenario
 gridStep = 0.002; % grid size for downsampling point clouds
@@ -106,7 +107,11 @@ end
 % Do 3D background subtraction
 % pcwrite(pointCloud(objSegmPts'),fullfile(visPath,sprintf('vis.seg.%s',objName)),'PLYFormat','binary');
 % pcwrite(backgroundPointCloud,fullfile(visPath,sprintf('vis.bg.%s',objName)),'PLYFormat','binary');
-[indicesNN,distsNN] = multiQueryKNNSearchImplGPU(backgroundPointCloud,objSegmPts');
+if useGPU
+    [indicesNN,distsNN] = multiQueryKNNSearchImplGPU(backgroundPointCloud,objSegmPts');
+else
+    [indicesNN,distsNN] = multiQueryKNNSearchImpl(backgroundPointCloud,objSegmPts',1);
+end
 objSegmPts(:,find(sqrt(distsNN) < 0.005)) = [];
 if strcmp(sceneData.env,'shelf')
   objSegmPtsBg = extBin2Bg(1:3,1:3) * objSegmPts + repmat(extBin2Bg(1:3,4) + [0;0;0.01],1,size(objSegmPts,2));
@@ -310,12 +315,20 @@ for instanceIdx = 1:objNum
   if size(currObjSegmPts,2) > 3
     tmpObjModelCloud = pointCloud(tmpObjModelPts');
     objSegCloud = pointCloud(currObjSegmPts');
-    [tform,movingReg,icpRmse] = pcregrigidGPU(objSegCloud,tmpObjModelCloud,'InlierRatio',icpWorstRejRatio,'MaxIterations',200,'Tolerance',[0.0001 0.0009],'Verbose',false,'Extrapolate',true);
+    if useGPU
+        [tform,movingReg,icpRmse] = pcregrigidGPU(objSegCloud,tmpObjModelCloud,'InlierRatio',icpWorstRejRatio,'MaxIterations',200,'Tolerance',[0.0001 0.0009],'Verbose',false,'Extrapolate',true);
+    else
+        [tform,movingReg,icpRmse] = pcregrigid(objSegCloud,tmpObjModelCloud,'InlierRatio',icpWorstRejRatio,'MaxIterations',200,'Tolerance',[0.0001 0.0009],'Verbose',false,'Extrapolate',true);
+    end
     icpRt1 = inv(tform.T');
     tmpObjModelPts = tmpObjModelCloud.Location';
     tmpObjModelPts = icpRt1(1:3,1:3) * tmpObjModelPts + repmat(icpRt1(1:3,4),1,size(tmpObjModelPts,2));
     tmpObjModelCloud = pointCloud(tmpObjModelPts');
-    [tform,movingReg,icpRmse] = pcregrigidGPU(objSegCloud,tmpObjModelCloud,'InlierRatio',icpWorstRejRatio/2,'MaxIterations',200,'Tolerance',[0.0001 0.0009],'Verbose',false,'Extrapolate',true);
+    if useGPU
+        [tform,movingReg,icpRmse] = pcregrigidGPU(objSegCloud,tmpObjModelCloud,'InlierRatio',icpWorstRejRatio/2,'MaxIterations',200,'Tolerance',[0.0001 0.0009],'Verbose',false,'Extrapolate',true);
+    else
+        [tform,movingReg,icpRmse] = pcregrigid(objSegCloud,tmpObjModelCloud,'InlierRatio',icpWorstRejRatio/2,'MaxIterations',200,'Tolerance',[0.0001 0.0009],'Verbose',false,'Extrapolate',true);
+    end
     icpRt2 = inv(tform.T');
     icpRt = icpRt2*icpRt1;
   else

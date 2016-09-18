@@ -19,6 +19,7 @@ rgbdUtilsPath = '/home/andyz/apc/toolbox/rgbd-utils'; % Directory of RGB-D toolb
 global visPath; visPath = fullfile(pwd,'visualizations'); % Directory to save visualization files
 global savePointCloudVis; savePointCloudVis = true; % Option to save point cloud visualizations (can influence pose estimation speed)
 global saveResultImageVis; saveResultImageVis = true;% Option to save pose estimation result visualizations (can influence pose estimation speed)
+global useGPU; useGPU = true; % Option to use GPU (CUDA support only)
 
 addpath(genpath(rgbdUtilsPath));
 addpath(genpath(pwd));
@@ -103,11 +104,13 @@ end
 emptyToteModel = pcread('models/bins/tote.ply');
 
 % Setup CUDA KNNSearch Kernel Function
-global KNNSearchGPU;
-tic;
-fprintf('Setting up CUDA kernel functions...\n');
-KNNSearchGPU = parallel.gpu.CUDAKernel('KNNSearch.ptx','KNNSearch.cu');
-toc;
+if useGPU
+    global KNNSearchGPU;
+    tic;
+    fprintf('Setting up CUDA kernel functions...\n');
+    KNNSearchGPU = parallel.gpu.CUDAKernel('KNNSearch.ptx','KNNSearch.cu');
+    toc;
+end
 
 % Start ROS service
 server = rossvcserver('/pose_estimation', 'pose_estimation/EstimateObjectPose', @serviceCallback);

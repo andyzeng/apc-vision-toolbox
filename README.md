@@ -1,19 +1,20 @@
-# MIT-Princeton Vision Toolbox for the APC 2016
+# Princeton Vision Toolbox for the APC 2016
 
 
-
-## A Quick-Start: Matlab Demo
-Estimates 6D object poses on the sample scene data (in `data/sample`) with pre-computed object segmentation results from [Deep Learning FCN ROS Package](#deep-learning-fcn-ros-package).
-1. 
 
 
 ## Documentation
+* [A Quick Start: Matlab Demo](#a-quick-start:-matlab-demo)
 * [6D Pose Estimation ROS Package](#6d-pose-estimation-ros-package)
 * [Realsense Standalone](#realsense-standalone)
 * [Realsense ROS Package](#realsense-ros-package)
 * [Deep Learning FCN ROS Package](#deep-learning-fcn-ros-package)
 * [FCN Training with Marvin](#fcn-training-with-marvin)
 * [Evaluation Code](#evaluation-code)
+
+## A Quick-Start: Matlab Demo
+Estimates 6D object poses on the sample scene data (in `data/sample`) with pre-computed object segmentation results from [Deep Learning FCN ROS Package](#deep-learning-fcn-ros-package).
+1. 
 
 ## 6D Pose Estimation ROS Package
 A Matlab ROS Package for estimating 6D object poses by model-fitting with ICP on RGB-D object segmentation results.

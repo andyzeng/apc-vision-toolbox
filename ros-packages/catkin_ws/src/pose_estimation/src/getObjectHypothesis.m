@@ -53,7 +53,10 @@ surfaceMean.Y = surfCentroid(2);
 surfaceMean.Z = surfCentroid(3);
 
 % Prepare ROS message 
-objectHypothesis = rosmessage('pose_estimation/ObjectHypothesis');
+try
+    objectHypothesis = rosmessage('pose_estimation/ObjectHypothesis');
+catch
+end
 objectHypothesis.Label = objName;
 objectHypothesis.Pose = poseMsg;
 objectHypothesis.Pca = pcaMsg;
