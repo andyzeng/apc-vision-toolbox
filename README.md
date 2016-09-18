@@ -13,8 +13,11 @@
 * [Evaluation Code](#evaluation-code)
 
 ## A Quick-Start: Matlab Demo
-Estimates 6D object poses on the sample scene data (in `data/sample`) with pre-computed object segmentation results from [Deep Learning FCN ROS Package](#deep-learning-fcn-ros-package).
-1. 
+Estimates 6D object poses on the sample scene data (in `data/sample`) with pre-computed object segmentation results from [Deep Learning FCN ROS Package](#deep-learning-fcn-ros-package):
+
+1. `git clone https://github.com/andyzeng/apc-vision-toolbox.git` (Note: source repository size is ~300mb, cloning may take a while)
+2. `cd apc-vision-toolbox/ros-packages/catkin_ws/src/pose_estimation/src/`
+3. Start Matlab and run `mdemo.m`
 
 ## 6D Pose Estimation ROS Package
 A Matlab ROS Package for estimating 6D object poses by model-fitting with ICP on RGB-D object segmentation results.
