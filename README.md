@@ -1,7 +1,7 @@
 # MIT-Princeton Vision Toolbox for the APC 2016
 Toolbox code for our vision system that took 3rd and 4th place at the Amazon Picking Challenge 2016. Includes RGB-D Realsense sensor drivers (standalone and ROS package), deep learning ROS package for 2D object segmentation (training and testing), ROS package for 6D pose estimation. This is the reference implementation of models and code for our paper:
 
-### Multi-view Self-supervised Deep Learning for 6D Pose Estimation in the Amazon Picking Challenge ([pdf](),[arxiv](),[webpage](http://www.cs.princeton.edu/~andyz/apc2016))
+### Multi-view Self-supervised Deep Learning for 6D Pose Estimation in the Amazon Picking Challenge ([pdf](https://arxiv.org/pdf/1609.09475v1.pdf), [arxiv](http://arxiv.org/abs/1609.09475), [webpage](http://www.cs.princeton.edu/~andyz/apc2016))
 
 *Andy Zeng, Kuan-Ting Yu, Shuran Song, Daniel Suo, Ed Walker Jr., Alberto Rodriguez and Jianxiong Xiao*
 
@@ -15,9 +15,9 @@ If you find this code useful in your work, please consider citing:
 
 ```shell
 @incollection{zeng2016apcvision,
-  author = {Andy Zeng and Kuan-Ting Yu and Shuran Song and Daniel Suo and Ed Walker Jr. and Alberto Rodriguez and Jianxiong Xiao},
   title = {Multi-view Self-supervised Deep Learning for 6D Pose Estimation in the Amazon Picking Challenge},
-  journal={arXiv},
+  author = {Andy Zeng and Kuan-Ting Yu and Shuran Song and Daniel Suo and Ed Walker Jr. and Alberto Rodriguez and Jianxiong Xiao},
+  journal={arXiv:1609.09475},
   year={2016}
 }
 ```
@@ -30,7 +30,7 @@ This code is released under the Simplified BSD License (refer to the LICENSE fil
 All relevant dataset information and downloads can be found [here](http://www.cs.princeton.edu/~andyz/apc2016).
 
 #### Contact
-If you have any questions or find any bugs, please let me know: [Andy Zeng](http://www.cs.princeton.edu/~andyz/) (andyz[at]princeton[dot]edu)
+If you have any questions or find any bugs, please let me know: [Andy Zeng](http://www.cs.princeton.edu/~andyz/) andyz[at]princeton[dot]edu
 
 ## Documentation
 * [A Quick Start: Matlab Demo](#a-quick-start-matlab-demo)
@@ -241,7 +241,7 @@ sudo cp cuda/include/* /usr/local/cudnn/v5/include/
 5. Run in terminal `./marvin train models/rgb-fcn/train_shelf_color.json models/weights/vgg16_imagenet_half.marvin` to train a segmentation model on RGB-D data with objects in the shelf (for objects in the tote, use network architecture `models/rgb-fcn/train_shelf_color.json`).
 
 ## Evaluation Code
-Code used to perform the experiments in the paper; tests the full vision system on the 'Shelf & Tote' benchmark dataset.
+Code used to perform the experiments in our paper; tests the full vision system on the 'Shelf & Tote' benchmark dataset.
 
 See `evaluation`
 
