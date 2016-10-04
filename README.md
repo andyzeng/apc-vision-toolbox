@@ -1,7 +1,7 @@
 # MIT-Princeton Vision Toolbox for the APC 2016
 Toolbox code for our vision system that took 3rd and 4th place at the Amazon Picking Challenge 2016. Includes RGB-D Realsense sensor drivers (standalone and ROS package), deep learning ROS package for 2D object segmentation (training and testing), ROS package for 6D pose estimation. This is the reference implementation of models and code for our paper:
 
-### Multi-view Self-supervised Deep Learning for 6D Pose Estimation in the Amazon Picking Challenge ([pdf](https://arxiv.org/pdf/1609.09475v1.pdf), [arxiv](http://arxiv.org/abs/1609.09475), [webpage](http://www.cs.princeton.edu/~andyz/apc2016))
+### Multi-view Self-supervised Deep Learning for 6D Pose Estimation in the Amazon Picking Challenge ([pdf](https://arxiv.org/pdf/1609.09475v2.pdf), [arxiv](http://arxiv.org/abs/1609.09475), [webpage](http://www.cs.princeton.edu/~andyz/apc2016))
 
 *Andy Zeng, Kuan-Ting Yu, Shuran Song, Daniel Suo, Ed Walker Jr., Alberto Rodriguez and Jianxiong Xiao*
 
