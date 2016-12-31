@@ -14,10 +14,10 @@ Warehouse automation has attracted significant interest in recent years, perhaps
 If you find this code useful in your work, please consider citing:
 
 ```shell
-@incollection{zeng2016apcvision,
-  title = {Multi-view Self-supervised Deep Learning for 6D Pose Estimation in the Amazon Picking Challenge},
-  author = {Andy Zeng and Kuan-Ting Yu and Shuran Song and Daniel Suo and Ed Walker Jr. and Alberto Rodriguez and Jianxiong Xiao},
-  journal={arXiv:1609.09475},
+@article{zeng2016multi,
+  title={Multi-view Self-supervised Deep Learning for 6D Pose Estimation in the Amazon Picking Challenge},
+  author={Zeng, Andy and Yu, Kuan-Ting and Song, Shuran and Suo, Daniel and Walker Jr, Ed and Rodriguez, Alberto and Xiao, Jianxiong},
+  journal={arXiv preprint arXiv:1609.09475},
   year={2016}
 }
 ```
@@ -32,7 +32,7 @@ All relevant dataset information and downloads can be found [here](http://www.cs
 #### Contact
 If you have any questions or find any bugs, please let me know: [Andy Zeng](http://www.cs.princeton.edu/~andyz/) andyz[at]princeton[dot]edu
 
-## Documentation
+## Table of Contents
 * [A Quick Start: Matlab Demo](#a-quick-start-matlab-demo)
 * [6D Pose Estimation ROS Package](#6d-pose-estimation-ros-package)
 * [Realsense Standalone](#realsense-standalone)
@@ -40,7 +40,7 @@ If you have any questions or find any bugs, please let me know: [Andy Zeng](http
 * [Deep Learning FCN ROS Package](#deep-learning-fcn-ros-package)
 * [FCN Training with Marvin](#fcn-training-with-marvin)
 * [Evaluation Code](#evaluation-code)
-* [RGB-D Annotator](#rgb-d-annotator)
+* [3D Annotation Tool](#3d-annotation-tool)
 
 ## A Quick-Start: Matlab Demo
 Estimates 6D object poses on the sample scene data (in `data/sample`) with pre-computed object segmentation results from [Deep Learning FCN ROS Package](#deep-learning-fcn-ros-package):
@@ -187,7 +187,7 @@ sudo cp cuda/include/* /usr/local/cudnn/v5/include/
 4. Source `devel/setup.sh`
 
 ### Usage
-* Navigate to `models/competition/` and run bash script `./download_weights.sh` to download our trained weights for object segmentation (trained on our [training dataset](http://www.cs.princeton.edu/~andyz/apc2016))
+* Navigate to `ros_packages/.../marvin_convnet/models/competition/` and run bash script `./download_weights.sh` to download our trained weights for object segmentation (trained on our [training dataset](http://www.cs.princeton.edu/~andyz/apc2016))
 * Edit `marvin_convnet/src/detect.cu`: Towards the top of the file, specify the filepath to the network architecture .json file and .marvin weights.
 * Create a folder called `tmp` in `apc-vision-toolbox/data` (e.g. `apc-vision-toolbox/data/tmp`). This where marvin_convnet will read/write RGB-D data. The format of the data in `tmp` follows the format of the scenes in our [datasets](http://www.cs.princeton.edu/~andyz/apc2016) and the format of the data saved by [Realsense Standalone](#realsense-standalone).
 * marvin_convnet offers two services: `save_images` and `detect`. The former retrieves RGB-D data from the [Realsense ROS Package](#realsense-ros-package) and writes to disk in the `tmp` folder, while the latter reads from disk in the `tmp` folder and feeds the RGB-D data forward through the FCN and saves the response images to disk 
@@ -250,7 +250,7 @@ See `evaluation`
 2. In `evaluation/getError.m`, change the variable `benchmarkPath` to point to the filepath of your benchmark dataset directory
 3. We have provided our vision system's predictions in a saved Matlab .mat file `evaluation/predictions.mat`. To compute the accuracy of these predictions against the ground truth labels of the 'Shelf & Tote' benchmark dataset, run `evaluation/getError.m`
 
-## RGB-D Annotator
+## 3D Annotation Tool
 An online WebGL-based tool for annotating ground truth 6D object poses on RGB-D data. Follows an implementation of [RGB-D Annotator](https://github.com/danielsuo/rgbd-annotator) with light changes.
 
 
