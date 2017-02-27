@@ -1,7 +1,7 @@
 # MIT-Princeton Vision Toolbox for the APC 2016
 Toolbox code for our vision system that took 3rd and 4th place at the Amazon Picking Challenge 2016. Includes RGB-D Realsense sensor drivers (standalone and ROS package), deep learning ROS package for 2D object segmentation (training and testing), ROS package for 6D pose estimation. This is the reference implementation of models and code for our paper:
 
-### Multi-view Self-supervised Deep Learning for 6D Pose Estimation in the Amazon Picking Challenge ([pdf](https://arxiv.org/pdf/1609.09475v2.pdf), [arxiv](http://arxiv.org/abs/1609.09475), [webpage](http://www.cs.princeton.edu/~andyz/apc2016))
+### Multi-view Self-supervised Deep Learning for 6D Pose Estimation in the Amazon Picking Challenge ([pdf](https://arxiv.org/pdf/1609.09475v2.pdf), [arxiv](http://arxiv.org/abs/1609.09475), [webpage](http://apc.cs.princeton.edu/))
 
 *Andy Zeng, Kuan-Ting Yu, Shuran Song, Daniel Suo, Ed Walker Jr., Alberto Rodriguez and Jianxiong Xiao*
 
@@ -29,7 +29,7 @@ If you find this code useful in your work, please consider citing:
 This code is released under the Simplified BSD License (refer to the LICENSE file for details).
 
 #### Datasets
-All relevant dataset information and downloads can be found [here](http://www.cs.princeton.edu/~andyz/apc2016).
+All relevant dataset information and downloads can be found [here](http://apc.cs.princeton.edu/).
 
 #### Contact
 If you have any questions or find any bugs, please let me know: [Andy Zeng](http://www.cs.princeton.edu/~andyz/) andyz[at]princeton[dot]edu
@@ -189,9 +189,9 @@ sudo cp cuda/include/* /usr/local/cudnn/v5/include/
 4. Source `devel/setup.sh`
 
 ### Usage
-* Navigate to `ros_packages/.../marvin_convnet/models/competition/` and run bash script `./download_weights.sh` to download our trained weights for object segmentation (trained on our [training dataset](http://www.cs.princeton.edu/~andyz/apc2016))
+* Navigate to `ros_packages/.../marvin_convnet/models/competition/` and run bash script `./download_weights.sh` to download our trained weights for object segmentation (trained on our [training dataset](http://apc.cs.princeton.edu/))
 * Edit `marvin_convnet/src/detect.cu`: Towards the top of the file, specify the filepath to the network architecture .json file and .marvin weights.
-* Create a folder called `tmp` in `apc-vision-toolbox/data` (e.g. `apc-vision-toolbox/data/tmp`). This where marvin_convnet will read/write RGB-D data. The format of the data in `tmp` follows the format of the scenes in our [datasets](http://www.cs.princeton.edu/~andyz/apc2016) and the format of the data saved by [Realsense Standalone](#realsense-standalone).
+* Create a folder called `tmp` in `apc-vision-toolbox/data` (e.g. `apc-vision-toolbox/data/tmp`). This where marvin_convnet will read/write RGB-D data. The format of the data in `tmp` follows the format of the scenes in our [datasets](http://apc.cs.princeton.edu/) and the format of the data saved by [Realsense Standalone](#realsense-standalone).
 * marvin_convnet offers two services: `save_images` and `detect`. The former retrieves RGB-D data from the [Realsense ROS Package](#realsense-ros-package) and writes to disk in the `tmp` folder, while the latter reads from disk in the `tmp` folder and feeds the RGB-D data forward through the FCN and saves the response images to disk 
 * To start the RGB-D data saving service, run: 
 
@@ -213,7 +213,7 @@ rosservice call /marvin_convnet ["elmers_washable_no_run_school_glue","expo_dry_
 
 ## FCN Training with Marvin
 
-Code and models for training object segmentation using [FCNs (Fully Convolutional Networks)](https://arxiv.org/abs/1411.4038) with [Marvin](http://marvin.is/), a lightweight GPU-only neural network framework. Includes network architecture .json files in `convnet-training/models` and a Marvin data layer in `convnet-training/apc.hpp` that randomly samples RGB-D images (RGB and HHA) from our [segmentation training dataset](http://www.cs.princeton.edu/~andyz/apc2016).
+Code and models for training object segmentation using [FCNs (Fully Convolutional Networks)](https://arxiv.org/abs/1411.4038) with [Marvin](http://marvin.is/), a lightweight GPU-only neural network framework. Includes network architecture .json files in `convnet-training/models` and a Marvin data layer in `convnet-training/apc.hpp` that randomly samples RGB-D images (RGB and HHA) from our [segmentation training dataset](http://apc.cs.princeton.edu/).
 
 See `convnet-training`
 
@@ -235,7 +235,7 @@ sudo cp cuda/include/* /usr/local/cudnn/v5/include/
  * Used for reading images
 
 ### Setup Instructions
-1. Download our [segmentation training dataset](http://www.cs.princeton.edu/~andyz/apc2016)
+1. Download our [segmentation training dataset](http://apc.cs.princeton.edu/)
 2. Navigate to directory `convnet-training/`
 2. Specify training dataset filepath in APCData layer of network architecture in `models/train_shelf_color.json`
 3. Navigate to `models/weights/` and run bash script `./download_weights.sh` to download VGG pre-trained weights on ImageNet (see [Marvin](http://marvin.is/) for more pre-trained weights)
@@ -248,7 +248,7 @@ Code used to perform the experiments in our paper; tests the full vision system 
 See `evaluation`
 
 ### Setup Instructions
-1. Download our 'Shelf & Tote' benchmark dataset from [here](http://www.cs.princeton.edu/~andyz/apc2016) and extract its contents to `apc-vision-toolbox/data/benchmark` (e.g. `apc-vision-toolbox/data/benchmark/office`, `apc-vision-toolbox/data/benchmark/warehouse', etc.)
+1. Download our 'Shelf & Tote' benchmark dataset from [here](http://apc.cs.princeton.edu/) and extract its contents to `apc-vision-toolbox/data/benchmark` (e.g. `apc-vision-toolbox/data/benchmark/office`, `apc-vision-toolbox/data/benchmark/warehouse', etc.)
 2. In `evaluation/getError.m`, change the variable `benchmarkPath` to point to the filepath of your benchmark dataset directory
 3. We have provided our vision system's predictions in a saved Matlab .mat file `evaluation/predictions.mat`. To compute the accuracy of these predictions against the ground truth labels of the 'Shelf & Tote' benchmark dataset, run `evaluation/getError.m`
 
