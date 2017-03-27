@@ -16,10 +16,10 @@ Warehouse automation has attracted significant interest in recent years, perhaps
 If you find this code useful in your work, please consider citing:
 
 ```shell
-@article{zeng2016multi,
+@inproceedings{zeng2016multi,
   title={Multi-view Self-supervised Deep Learning for 6D Pose Estimation in the Amazon Picking Challenge},
   author={Zeng, Andy and Yu, Kuan-Ting and Song, Shuran and Suo, Daniel and Walker Jr, Ed and Rodriguez, Alberto and Xiao, Jianxiong},
-  journal={arXiv preprint arXiv:1609.09475},
+  booktitle={ICRA},
   year={2016}
 }
 ```
