@@ -145,12 +145,12 @@ int main(int argc, char * argv[]) try {
         glOrtho(0, win_width, win_height, 0, -1, +1);
         int s = win_width / (rs_dev.is_stream_enabled(rs::stream::infrared2) ? 3 : 2);
         texture_buffers[0].show(rs_dev, rs::stream::color, 0, 0, s, win_height - win_height / 2);
-        texture_buffers[1].show(rs_dev, rs::stream::color, s, 0, s, win_height - win_height / 2);
-        texture_buffers[2].show(rs_dev, rs::stream::depth, 0, win_height / 2, s, win_height - win_height / 2);
+        texture_buffers[1].show(rs_dev, rs::stream::color_aligned_to_depth, s, 0, s, win_height - win_height / 2);
+        texture_buffers[2].show(rs_dev, rs::stream::depth_aligned_to_color, 0, win_height / 2, s, win_height - win_height / 2);
         texture_buffers[3].show(rs_dev, rs::stream::depth, s, win_height / 2, s, win_height - win_height / 2);
         if (rs_dev.is_stream_enabled(rs::stream::infrared2)) {
-            texture_buffers[4].show(rs_dev, rs::stream::infrared2, 2 * s, 0, s, win_height - win_height / 2);
-            texture_buffers[5].show(rs_dev, rs::stream::infrared2, 2 * s, win_height / 2, s, win_height - win_height / 2);
+            texture_buffers[4].show(rs_dev, rs::stream::infrared2_aligned_to_depth, 2 * s, 0, s, win_height - win_height / 2);
+            texture_buffers[5].show(rs_dev, rs::stream::depth_aligned_to_infrared2, 2 * s, win_height / 2, s, win_height - win_height / 2);
         }
         glPopMatrix();
         glfwSwapBuffers(win);
