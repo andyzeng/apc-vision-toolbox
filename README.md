@@ -253,7 +253,7 @@ See `evaluation`
 3. We have provided our vision system's predictions in a saved Matlab .mat file `evaluation/predictions.mat`. To compute the accuracy of these predictions against the ground truth labels of the 'Shelf & Tote' benchmark dataset, run `evaluation/getError.m`
 
 ## 3D Annotation Tool
-An online WebGL-based tool for annotating ground truth 6D object poses on RGB-D data. Follows an implementation of [RGB-D Annotator](https://github.com/danielsuo/rgbd-annotator) with light changes.
+An online WebGL-based tool for annotating ground truth 6D object poses on RGB-D data. Follows an implementation of [RGB-D Annotator](https://github.com/danielsuo/rgbd-annotator) with small changes. Here's a download link to our [exact copy of the annotator](http://vision.princeton.edu/projects/2016/apc/downloads/rgbd-annotator.zip).
 
 
 
