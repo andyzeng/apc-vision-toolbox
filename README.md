@@ -105,12 +105,12 @@ See `realsense_standalone`
 ### Compilation
 ```shell
 cd realsense_standalone
-./build.sh
+./compile.sh
 ```
 
 ### Usage
 
-Run `./capture` to begin streaming RGB-D frames from the Realsense device. While the stream window is active, press the space-bar key to capture and save the current RGB-D frame to disk. Relevant camera information and captured RGB-D frames are saved to a randomly named folder under `data`. 
+After compiling, run `./stream` to begin streaming RGB-D frames from the Realsense device. While the stream window is active, press the space-bar key to capture and save the current RGB-D frame to disk. Relevant camera information and captured RGB-D frames are saved to a randomly named folder under `data`. 
 
 If your Realsense device is plugged in but remains undetected, try using a different USB port. If that fails, run the following script while the device is unplugged to refresh your USB ports:
 
