@@ -1,11 +1,14 @@
 # MIT-Princeton Vision Toolbox for the APC 2016
-Toolbox code for our vision system that took 3rd and 4th place at the Amazon Picking Challenge 2016. Includes RGB-D Realsense sensor drivers (standalone and ROS package), deep learning ROS package for 2D object segmentation (training and testing), ROS package for 6D pose estimation. This is the reference implementation of models and code for our paper:
+
+**Update:** we have released our code and paper for our new vision system [here](https://github.com/andyzeng/arc-robot-vision), which took 1st place in the stowing task at the Amazon Robotics Challenge 2017.
+
+This repository contains toolbox code for our vision system that took 3rd and 4th place at the Amazon Picking Challenge 2016. Includes RGB-D Realsense sensor drivers (standalone and ROS package), deep learning ROS package for 2D object segmentation (training and testing), ROS package for 6D pose estimation. This is the reference implementation of models and code for our paper:
 
 ### Multi-view Self-supervised Deep Learning for 6D Pose Estimation in the Amazon Picking Challenge ([pdf](https://arxiv.org/pdf/1609.09475v2.pdf), [arxiv](http://arxiv.org/abs/1609.09475), [webpage](http://apc.cs.princeton.edu/))
 
-*Andy Zeng, Kuan-Ting Yu, Shuran Song, Daniel Suo, Ed Walker Jr., Alberto Rodriguez and Jianxiong Xiao*
+*[Andy Zeng](http://andyzeng.com/), [Kuan-Ting Yu](http://people.csail.mit.edu/peterkty/), [Shuran Song](http://vision.princeton.edu/people/shurans/), Daniel Suo, Ed Walker Jr., [Alberto Rodriguez](http://meche.mit.edu/people/faculty/ALBERTOR@MIT.EDU) and [Jianxiong Xiao](http://vision.princeton.edu/people/xj/)*
 
-To appear at IEEE International Conference on Robotics and Automation (ICRA) 2017
+IEEE International Conference on Robotics and Automation (ICRA) 2017
 
 Warehouse automation has attracted significant interest in recent years, perhaps most visibly by the Amazon Picking Challenge (APC). Achieving a fully autonomous pick-and-place system requires a robust vision system that reliably recognizes objects and their 6D poses. However, a solution eludes the warehouse setting due to cluttered environments, self-occlusion, sensor noise, and a large variety of objects. In this paper, we present a vision system that took 3rd- and 4th- place in the stowing and picking tasks, respectively at APC 2016. Our approach leverages multi-view RGB-D data and data-driven, self-supervised learning to overcome the aforementioned difficulties. More specifically, we first segment and label multiple views of a scene with a fully convolutional neural network, and then fit pre-scanned 3D object models to the resulting segmentation to get the 6D object pose. Training a deep neural network for segmentation typically requires a large amount of training data with manual labels. We propose a self-supervised method to generate a large labeled dataset without tedious manual segmentation that could be scaled up to more object categories easily. We demonstrate that our system can reliably estimate the 6D pose of objects under a variety of scenarios.
 
