@@ -1,6 +1,6 @@
 # MIT-Princeton Vision Toolbox for the APC 2016
 
-**Update:** we have released our code and paper for our new vision system [here](https://github.com/andyzeng/arc-robot-vision), which took 1st place in the stowing task at the Amazon Robotics Challenge 2017. Both repositories will continue to be maintained.
+**Update:** we have released a paper detailing our new vision system [here](http://arc.cs.princeton.edu/), which took 1st place in the stowing task at the Amazon Robotics Challenge 2017. This repository will continue to be maintained.
 
 This repository contains toolbox code for our vision system that took 3rd and 4th place at the Amazon Picking Challenge 2016. Includes RGB-D Realsense sensor drivers (standalone and ROS package), deep learning ROS package for 2D object segmentation (training and testing), ROS package for 6D pose estimation. This is the reference implementation of models and code for our paper:
 
@@ -55,7 +55,7 @@ Estimates 6D object poses on the sample scene data (in `data/sample`) with pre-c
 3. Start Matlab and run `mdemo`
 
 ## 6D Pose Estimation ROS Package
-A Matlab ROS Package for estimating 6D object poses by model-fitting with ICP on RGB-D object segmentation results.
+A Matlab ROS Package for estimating 6D object poses by model-fitting with ICP on RGB-D object segmentation results. 3D point cloud models of objects and bins can be found [here](ros-packages/catkin_ws/src/pose_estimation/src/models).
 
 ### Dependencies
 1. [Deep Learning FCN ROS Package](#deep-learning-fcn-ros-package) and all of its respective dependencies.
