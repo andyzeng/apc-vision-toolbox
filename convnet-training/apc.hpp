@@ -104,7 +104,7 @@ public:
 
             // Select a random sequence from object directory
             std::vector<std::string> sequence_list;
-            GetFilesInDirectory(curr_obj_directory, sequence_list, "seq-0");
+            GetFilesInDirectory(curr_obj_directory, sequence_list, "scene-0");
             std::sort(sequence_list.begin(), sequence_list.end());
             int rand_sequence_idx = (int)floor(GetRandomFloat(0, (float)sequence_list.size()));
             std::string curr_sequence_name = sequence_list[rand_sequence_idx];
