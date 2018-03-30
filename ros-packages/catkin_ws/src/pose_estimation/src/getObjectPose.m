@@ -113,6 +113,7 @@ else
     [indicesNN,distsNN] = multiQueryKNNSearchImpl(backgroundPointCloud,objSegmPts',1);
 end
 objSegmPts(:,find(sqrt(distsNN) < 0.005)) = [];
+objSegmConf(:,find(sqrt(distsNN) < 0.005)) = [];
 if strcmp(sceneData.env,'shelf')
   objSegmPtsBg = extBin2Bg(1:3,1:3) * objSegmPts + repmat(extBin2Bg(1:3,4) + [0;0;0.01],1,size(objSegmPts,2));
   bgRot = vrrotvec2mat([0 1 0 -atan(0.025/0.20)]);
