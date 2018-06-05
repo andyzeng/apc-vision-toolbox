@@ -112,6 +112,14 @@ if useGPU
     toc;
 end
 
+
 % Start ROS service
+%{
 server = rossvcserver('/pose_estimation', 'pose_estimation/EstimateObjectPose', @serviceCallback);
 fprintf('Ready.\n');
+%}
+
+% start listen prediction topic 
+sub = rossubscriber('/mask_prediction_with_class');
+mask_msg2 = receive(sub,10)
+

@@ -7,7 +7,7 @@ project(pose_estimation)
 find_package(catkin REQUIRED)
 
 ## System dependencies are found with CMake's conventions
-find_package(catkin REQUIRED COMPONENTS roscpp message_generation geometry_msgs std_msgs)
+find_package(catkin REQUIRED COMPONENTS roscpp message_generation geometry_msgs std_msgs sensor_msgs)
 
 
 ## Uncomment this if the package has a setup.py. This macro ensures
@@ -43,6 +43,7 @@ find_package(catkin REQUIRED COMPONENTS roscpp message_generation geometry_msgs 
 add_message_files(
   FILES
   ObjectHypothesis.msg
+  object_mask.msg
 )
 
 ## Generate services in the 'srv' folder
@@ -63,6 +64,7 @@ generate_messages(
   DEPENDENCIES
   std_msgs  # Or other packages containing msgs
   geometry_msgs
+  sensor_msgs
 )
 
 ################################################
