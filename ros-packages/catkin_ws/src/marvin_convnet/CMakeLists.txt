@@ -12,6 +12,7 @@ find_package(catkin REQUIRED COMPONENTS
   message_generation
   geometry_msgs
   std_msgs
+  sensor_msgs
 )
 
 find_package(OpenCV 2.4 REQUIRED)
