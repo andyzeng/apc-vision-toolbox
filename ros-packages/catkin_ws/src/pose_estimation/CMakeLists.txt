@@ -65,7 +65,6 @@ generate_messages(
   std_msgs  # Or other packages containing msgs
   geometry_msgs
   sensor_msgs
-  marvin_convnet
 )
 
 ################################################
