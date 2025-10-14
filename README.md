@@ -6,7 +6,7 @@ This repository contains toolbox code for our vision system that took 3rd and 4t
 
 ### Multi-view Self-supervised Deep Learning for 6D Pose Estimation in the Amazon Picking Challenge ([pdf](https://arxiv.org/pdf/1609.09475v2.pdf), [arxiv](http://arxiv.org/abs/1609.09475), [webpage](http://apc.cs.princeton.edu/))
 
-*[Andy Zeng](http://andyzeng.com/), [Kuan-Ting Yu](http://people.csail.mit.edu/peterkty/), [Shuran Song](http://vision.princeton.edu/people/shurans/), Daniel Suo, Ed Walker Jr., [Alberto Rodriguez](http://meche.mit.edu/people/faculty/ALBERTOR@MIT.EDU) and [Jianxiong Xiao](http://vision.princeton.edu/people/xj/)*
+*[Andy Zeng](http://andyzeng.com/), [Kuan-Ting Yu](http://people.csail.mit.edu/peterkty/), [Shuran Song](http://3dvision.princeton.edu/people/shurans/), Daniel Suo, Ed Walker Jr., [Alberto Rodriguez](http://meche.mit.edu/people/faculty/ALBERTOR@MIT.EDU) and [Jianxiong Xiao](http://3dvision.princeton.edu/people/xj/)*
 
 IEEE International Conference on Robotics and Automation (ICRA) 2017
 
@@ -256,7 +256,7 @@ See `evaluation`
 3. We have provided our vision system's predictions in a saved Matlab .mat file `evaluation/predictions.mat`. To compute the accuracy of these predictions against the ground truth labels of the 'Shelf & Tote' benchmark dataset, run `evaluation/getError.m`
 
 ## 3D Annotation Tool
-An online WebGL-based tool for annotating ground truth 6D object poses on RGB-D data. Follows an implementation of [RGB-D Annotator](https://github.com/danielsuo/rgbd-annotator) with small changes. Here's a download link to our [exact copy of the annotator](http://vision.princeton.edu/projects/2016/apc/downloads/rgbd-annotator.zip).
+An online WebGL-based tool for annotating ground truth 6D object poses on RGB-D data. Follows an implementation of [RGB-D Annotator](https://github.com/danielsuo/rgbd-annotator) with small changes. Here's a download link to our [exact copy of the annotator](http://3dvision.princeton.edu/projects/2016/apc/downloads/rgbd-annotator.zip).
 
 
 
